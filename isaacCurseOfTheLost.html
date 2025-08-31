@@ -80,10 +80,6 @@
             background-color: #2d3436;
         }
         
-        .cell.selected {
-            box-shadow: 0 0 0 3px #f1c40f inset;
-        }
-        
         .controls {
             display: flex;
             justify-content: center;
@@ -158,12 +154,29 @@
             background-color: #c0392b;
         }
         
+        .download-btn {
+            background-color: #2ecc71;
+        }
+        
+        .download-btn:hover {
+            background-color: #27ae60;
+        }
+        
         .nav-controls {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 10px;
             margin-top: 20px;
+            background-color: #2c3e50;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .nav-title {
+            color: #ecf0f1;
+            font-weight: 600;
+            margin-bottom: 5px;
         }
         
         .nav-row {
@@ -226,50 +239,6 @@
                 font-size: 18px;
             }
         }
-        
-        /* Print styles */
-        @media print {
-            body, .container {
-                background-color: white;
-                color: black;
-                box-shadow: none;
-                padding: 0;
-                margin: 0;
-            }
-            
-            .controls, .nav-controls, .footer, h1, .instructions {
-                display: none;
-            }
-            
-            .grid-container {
-                margin: 0;
-            }
-            
-            .grid {
-                border: 1px solid black;
-            }
-            
-            .cell {
-                border: 1px solid #ccc;
-                width: 30px;
-                height: 30px;
-            }
-            
-            .cell.marked-white {
-                background-color: #ffffff;
-                border: 1px solid black;
-            }
-            
-            .cell.marked-black {
-                background-color: #000000;
-                border: 1px solid black;
-            }
-            
-            .cell.selected {
-                box-shadow: none;
-                border: 2px solid black;
-            }
-        }
     </style>
 </head>
 <body>
@@ -278,7 +247,7 @@
         
         <p class="instructions">
             Click on any cell to mark it with your selected color.<br>
-            Click again to remove the mark. Use arrow keys or buttons to navigate.
+            Click again to remove the mark. Use arrow buttons to move all marked cells.
         </p>
         
         <center>
@@ -288,6 +257,7 @@
         </center>
         
         <div class="nav-controls">
+            <div class="nav-title">Move Marked Cells</div>
             <div class="nav-row">
                 <button class="nav-btn" id="up-btn">↑</button>
             </div>
@@ -306,7 +276,7 @@
             </div>
             
             <button id="clear-btn" class="clear-btn">Clear Grid</button>
-            <button id="print-btn">Print/Save Grid</button>
+            <button id="download-btn" class="download-btn">Download PNG</button>
         </div>
         
         <p class="footer">
@@ -318,7 +288,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const grid = document.getElementById('grid');
             const clearBtn = document.getElementById('clear-btn');
-            const printBtn = document.getElementById('print-btn');
+            const downloadBtn = document.getElementById('download-btn');
             const colorOptions = document.querySelectorAll('.color-option');
             const currentColorText = document.querySelector('.current-color');
             
@@ -330,7 +300,6 @@
             
             let selectedColor = 'white';
             let markedCells = {};
-            let selectedCell = { row: 6, col: 6 }; // Start in the middle
             
             // Create the grid
             for (let row = 0; row < 13; row++) {
@@ -344,9 +313,6 @@
                         const row = parseInt(this.dataset.row);
                         const col = parseInt(this.dataset.col);
                         const cellKey = `${row}-${col}`;
-                        
-                        // Update selection
-                        updateSelectedCell(row, col);
                         
                         if (markedCells[cellKey] === selectedColor) {
                             // Remove mark if already marked with current color
@@ -364,9 +330,6 @@
                 }
             }
             
-            // Initialize with a selected cell
-            updateSelectedCell(selectedCell.row, selectedCell.col);
-            
             // Clear button functionality
             clearBtn.addEventListener('click', function() {
                 const cells = document.querySelectorAll('.cell');
@@ -376,9 +339,59 @@
                 markedCells = {};
             });
             
-            // Print button functionality
-            printBtn.addEventListener('click', function() {
-                window.print();
+            // Download button functionality
+            downloadBtn.addEventListener('click', function() {
+                // Create a canvas to draw the grid
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const size = 500; // Size of the output image
+                const cellSize = size / 13;
+                
+                canvas.width = size;
+                canvas.height = size;
+                
+                // Draw background
+                ctx.fillStyle = '#636e72';
+                ctx.fillRect(0, 0, size, size);
+                
+                // Draw grid lines
+                ctx.strokeStyle = '#7f8c8d';
+                ctx.lineWidth = 1;
+                
+                for (let i = 0; i <= 13; i++) {
+                    // Vertical lines
+                    ctx.beginPath();
+                    ctx.moveTo(i * cellSize, 0);
+                    ctx.lineTo(i * cellSize, size);
+                    ctx.stroke();
+                    
+                    // Horizontal lines
+                    ctx.beginPath();
+                    ctx.moveTo(0, i * cellSize);
+                    ctx.lineTo(size, i * cellSize);
+                    ctx.stroke();
+                }
+                
+                // Draw marked cells
+                for (let row = 0; row < 13; row++) {
+                    for (let col = 0; col < 13; col++) {
+                        const cellKey = `${row}-${col}`;
+                        if (markedCells[cellKey]) {
+                            if (markedCells[cellKey] === 'white') {
+                                ctx.fillStyle = '#ffffff';
+                            } else {
+                                ctx.fillStyle = '#000000'; // Use pure black for PNG
+                            }
+                            ctx.fillRect(col * cellSize + 1, row * cellSize + 1, cellSize - 2, cellSize - 2);
+                        }
+                    }
+                }
+                
+                // Create download link
+                const link = document.createElement('a');
+                link.download = 'grid.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
             });
             
             // Color selection functionality
@@ -393,97 +406,71 @@
                 });
             });
             
-            // Navigation button functionality
+            // Navigation button functionality - move all marked cells
             upBtn.addEventListener('click', function() {
-                if (selectedCell.row > 0) {
-                    updateSelectedCell(selectedCell.row - 1, selectedCell.col);
-                }
+                moveMarkedCells('up');
             });
             
             downBtn.addEventListener('click', function() {
-                if (selectedCell.row < 12) {
-                    updateSelectedCell(selectedCell.row + 1, selectedCell.col);
-                }
+                moveMarkedCells('down');
             });
             
             leftBtn.addEventListener('click', function() {
-                if (selectedCell.col > 0) {
-                    updateSelectedCell(selectedCell.row, selectedCell.col - 1);
-                }
+                moveMarkedCells('left');
             });
             
             rightBtn.addEventListener('click', function() {
-                if (selectedCell.col < 12) {
-                    updateSelectedCell(selectedCell.row, selectedCell.col + 1);
-                }
+                moveMarkedCells('right');
             });
             
-            // Keyboard navigation
-            document.addEventListener('keydown', function(e) {
-                switch(e.key) {
-                    case 'ArrowUp':
-                        if (selectedCell.row > 0) {
-                            updateSelectedCell(selectedCell.row - 1, selectedCell.col);
-                        }
-                        e.preventDefault();
-                        break;
-                    case 'ArrowDown':
-                        if (selectedCell.row < 12) {
-                            updateSelectedCell(selectedCell.row + 1, selectedCell.col);
-                        }
-                        e.preventDefault();
-                        break;
-                    case 'ArrowLeft':
-                        if (selectedCell.col > 0) {
-                            updateSelectedCell(selectedCell.row, selectedCell.col - 1);
-                        }
-                        e.preventDefault();
-                        break;
-                    case 'ArrowRight':
-                        if (selectedCell.col < 12) {
-                            updateSelectedCell(selectedCell.row, selectedCell.col + 1);
-                        }
-                        e.preventDefault();
-                        break;
-                    case ' ':
-                        // Mark/unmark current cell with spacebar
-                        const cellKey = `${selectedCell.row}-${selectedCell.col}`;
-                        const cell = document.querySelector(`.cell[data-row="${selectedCell.row}"][data-col="${selectedCell.col}"]`);
+            // Function to move all marked cells in a direction
+            function moveMarkedCells(direction) {
+                const newMarkedCells = {};
+                const cells = document.querySelectorAll('.cell');
+                
+                // First, clear all marks from the grid
+                cells.forEach(cell => {
+                    cell.classList.remove('marked-white', 'marked-black');
+                });
+                
+                // Calculate new positions for marked cells
+                for (const key in markedCells) {
+                    if (markedCells.hasOwnProperty(key)) {
+                        const [row, col] = key.split('-').map(Number);
+                        let newRow = row;
+                        let newCol = col;
                         
-                        if (markedCells[cellKey] === selectedColor) {
-                            // Remove mark if already marked with current color
-                            delete markedCells[cellKey];
-                            cell.classList.remove('marked-white', 'marked-black');
-                        } else {
-                            // Add mark with selected color
-                            markedCells[cellKey] = selectedColor;
-                            cell.classList.remove('marked-white', 'marked-black');
-                            cell.classList.add(`marked-${selectedColor}`);
+                        switch (direction) {
+                            case 'up':
+                                newRow = row - 1;
+                                break;
+                            case 'down':
+                                newRow = row + 1;
+                                break;
+                            case 'left':
+                                newCol = col - 1;
+                                break;
+                            case 'right':
+                                newCol = col + 1;
+                                break;
                         }
-                        e.preventDefault();
-                        break;
-                }
-            });
-            
-            // Function to update the selected cell
-            function updateSelectedCell(row, col) {
-                // Remove selection from previous cell
-                const prevCell = document.querySelector(`.cell[data-row="${selectedCell.row}"][data-col="${selectedCell.col}"]`);
-                if (prevCell) {
-                    prevCell.classList.remove('selected');
+                        
+                        // Only keep the mark if it's still within the grid
+                        if (newRow >= 0 && newRow < 13 && newCol >= 0 && newCol < 13) {
+                            const newKey = `${newRow}-${newCol}`;
+                            newMarkedCells[newKey] = markedCells[key];
+                            
+                            // Update the visual grid
+                            const cell = document.querySelector(`.cell[data-row="${newRow}"][data-col="${newCol}"]`);
+                            if (cell) {
+                                cell.classList.add(`marked-${markedCells[key]}`);
+                            }
+                        }
+                    }
                 }
                 
-                // Update selected cell
-                selectedCell = { row, col };
-                
-                // Add selection to new cell
-                const newCell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
-                if (newCell) {
-                    newCell.classList.add('selected');
-                    
-                    // Scroll into view if needed (for mobile)
-                    newCell.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
-                }
+                // Update the marked cells data
+                markedCells = newMarkedCells;
             }
         });
     </script>
