@@ -381,6 +381,12 @@ button:active { transform: translateY(0); }
     padding-top: 15px;
 }
 
+.disclaimer {
+    font-size: 10px;
+    color: #5a6a6b;
+    margin-top: 6px;
+}
+
 .github-link {
     color: #4cc9f0;
     text-decoration: none;
