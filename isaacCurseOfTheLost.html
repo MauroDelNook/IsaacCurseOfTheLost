@@ -458,7 +458,7 @@
                 </label>
             </div>
             <div class="void-info" id="void-info" style="display:none">
-                <div id="void-stats">No boss rooms marked yet. Use the red symbol to mark them.</div>
+                <div id="void-stats">No boss rooms marked yet. Use the skull (💀) symbol to mark them.</div>
                 <div class="void-legend">
                     <span class="legend-possible">⚠ Possible Delirium — fits a 2×2 block within bounds with no overlapping rooms</span>
                     <span class="legend-impossible">✕ Ruled Out — no valid 2×2 expansion exists (out of bounds or blocked by another room)</span>
@@ -488,10 +488,10 @@
                 <div class="color-options">
                     <div class="color-option color-white selected" data-color="white" title="Visited Room"></div>
                     <div class="color-option color-black" data-color="black" title="Unvisited Room"></div>
-                    <div class="color-option color-red" data-color="red" title="Boss Room"></div>
-                    <div class="color-option color-skull" data-color="skull" title="Enemy Room">💀</div>
+                    <div class="color-option color-red" data-color="red" title="Red Room"></div>
+                    <div class="color-option color-skull" data-color="skull" title="Boss Room">💀</div>
                     <div class="color-option color-question" data-color="question" title="Unknown">?</div>
-                    <div class="color-option color-empty-room" data-color="empty-room" title="Empty Room (no room here)">○</div>
+                    <div class="color-option color-empty-room" data-color="empty-room" title="Empty Room (no room here)">✕</div>
                 </div>
             </div>
 
@@ -503,7 +503,7 @@
 
         <div class="footer">
             <p>The Binding of Isaac: Repentance - Curse of The Lost Helper</p>
-            <p>Created by <a href="https://github.com/yourusername" class="github-link" id="github-link">YourGitHubUsername</a></p>
+            <p>Created by <a href="https://github.com/MauroDelNook" class="github-link" id="github-link">MauroDelNook</a></p>
         </div>
     </div>
 
@@ -524,8 +524,8 @@
             let markedCells = {};
             let isVoidMode = false;
 
-            githubLink.href = 'https://github.com/yourusername';
-            githubLink.textContent = 'YourGitHubUsername';
+            githubLink.href = 'https://github.com/MauroDelNook';
+            githubLink.textContent = 'MauroDelNook';
 
             const ALL_MARK_CLASSES = [
                 'marked-white', 'marked-black', 'marked-red',
@@ -535,7 +535,7 @@
             function getCellText(color) {
                 if (color === 'skull') return '💀';
                 if (color === 'question') return '?';
-                if (color === 'empty-room') return '○';
+                if (color === 'empty-room') return '✕';
                 return '';
             }
 
@@ -560,14 +560,31 @@
                     const c0 = col + dc;
                     // Entire 2×2 must fit within 0–12
                     if (r0 < 0 || r0 + 1 >= GRID_SIZE || c0 < 0 || c0 + 1 >= GRID_SIZE) continue;
+
+                    const blockSet = new Set([
+                        `${r0}-${c0}`, `${r0}-${c0+1}`,
+                        `${r0+1}-${c0}`, `${r0+1}-${c0+1}`
+                    ]);
+
                     let valid = true;
                     for (let dr2 = 0; dr2 <= 1 && valid; dr2++) {
                         for (let dc2 = 0; dc2 <= 1 && valid; dc2++) {
                             const r = r0 + dr2, c = c0 + dc2;
                             if (r === row && c === col) continue; // skip boss cell itself
+
+                            // Expansion cell must be truly unmarked — empty-room means no room
+                            // can exist there, so the 2×2 boss block can't occupy it either
                             const type = markedCells[`${r}-${c}`];
-                            // 'empty-room' and unmarked are free; everything else blocks
-                            if (type && type !== 'empty-room') valid = false;
+                            if (type) { valid = false; continue; }
+
+                            // Neighbors of this expansion cell that are outside the 2×2 must also be free.
+                            // (Adjacency to the boss cell's own neighbors is allowed — that's the path in.)
+                            for (const [nr, nc] of [[r-1,c],[r+1,c],[r,c-1],[r,c+1]]) {
+                                if (blockSet.has(`${nr}-${nc}`)) continue;
+                                if (nr < 0 || nr >= GRID_SIZE || nc < 0 || nc >= GRID_SIZE) continue;
+                                const ntype = markedCells[`${nr}-${nc}`];
+                                if (ntype && ntype !== 'empty-room') { valid = false; break; }
+                            }
                         }
                     }
                     if (valid) return true;
@@ -583,7 +600,7 @@
 
                 let possible = 0, impossible = 0;
                 for (const key in markedCells) {
-                    if (markedCells[key] !== 'red') continue;
+                    if (markedCells[key] !== 'skull') continue;
                     const [row, col] = key.split('-').map(Number);
                     const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
                     if (!cell) continue;
@@ -599,7 +616,7 @@
                 const voidStats = document.getElementById('void-stats');
                 const total = possible + impossible;
                 if (total === 0) {
-                    voidStats.textContent = 'No boss rooms marked yet. Use the red symbol to mark them.';
+                    voidStats.textContent = 'No boss rooms marked yet. Use the skull (💀) symbol to mark them.';
                 } else {
                     voidStats.innerHTML =
                         `Boss Rooms: ${total} — ` +
@@ -713,7 +730,7 @@
                         }
 
                         // Delirium indicator in exported image
-                        if (isVoidMode && type === 'red') {
+                        if (isVoidMode && type === 'skull') {
                             if (canBeDelirium(row, col)) {
                                 ctx.strokeStyle = '#ffd700';
                                 ctx.lineWidth = 3;
