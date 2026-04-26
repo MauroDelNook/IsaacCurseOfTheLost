@@ -2,7 +2,16 @@
 
 ## [Unreleased]
 
+---
+
+## [0.2.0] — 2026-04-26
+
+### Changed
+- Renamed "Other Room" cell type internally from `question` to `other` (no visual change for the user)
+- "Other Room" symbol changed from `?` to `★` on the map
+
 ### Added
+- Fan-made disclaimer in the footer clarifying the tool is not affiliated with Edmund McMillen / Nicalis
 - **The Void Floor mode** — toggle that activates Delirium detection on boss rooms
 - **Delirium analysis** — each 💀 Boss Room cell is evaluated against all 4 possible 2×2 expansions; rooms that cannot contain Delirium are visually ruled out
   - ⚠ gold pulsing border: at least one valid 2×2 expansion exists
