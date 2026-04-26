@@ -10,29 +10,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const leftBtn = document.getElementById('left-btn');
     const rightBtn = document.getElementById('right-btn');
 
-    // ── Theme toggle ──
-    const THEMES = ['auto', 'light', 'dark'];
-    const THEME_LABEL = { auto: '🖥️ Auto', light: '☀️ Light', dark: '🌙 Dark' };
-    const themeBtn = document.getElementById('theme-btn');
-    let themeIndex = Math.max(0, THEMES.indexOf(localStorage.getItem('theme') || 'auto'));
-
-    function applyTheme(theme) {
-        if (theme === 'auto') {
-            document.documentElement.removeAttribute('data-theme');
-        } else {
-            document.documentElement.setAttribute('data-theme', theme);
-        }
-        themeBtn.textContent = THEME_LABEL[theme];
-        localStorage.setItem('theme', theme);
-    }
-
-    applyTheme(THEMES[themeIndex]);
-
-    themeBtn.addEventListener('click', function() {
-        themeIndex = (themeIndex + 1) % THEMES.length;
-        applyTheme(THEMES[themeIndex]);
-    });
-
     let selectedColor = 'white';
     let markedCells = {};
     let isVoidMode = false;
