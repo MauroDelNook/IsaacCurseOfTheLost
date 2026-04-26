@@ -4,6 +4,14 @@
 
 ---
 
+## [0.2.1] — 2026-04-26
+
+### Changed
+- Renamed `isaacCurseOfTheLost.html` to `index.html` for GitHub Pages compatibility
+- Updated README: file reference, corrected ★ symbol entry in the symbol table, updated Stack section to reflect multi-file structure
+
+---
+
 ## [0.2.0] — 2026-04-26
 
 ### Changed

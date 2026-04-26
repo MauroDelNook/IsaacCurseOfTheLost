@@ -2,7 +2,7 @@
 
 A browser-based map tracker for **The Binding of Isaac: Repentance+**, designed for runs affected by the **Curse of The Lost** or **Amnesia** curse, where the minimap is hidden.
 
-Open `isaacCurseOfTheLost.html` directly in any browser — no install, no server required.
+Open `index.html` directly in any browser — no install, no server required.
 
 ---
 
@@ -20,7 +20,7 @@ Lets you manually reconstruct the floor map on a 13×13 grid (the maximum map si
 | _(blank)_ | Dark grey | Unvisited Room (known but not entered) |
 | _(blank)_ | Red | Red Room |
 | 💀 | Grey | Boss Room |
-| ? | Orange | Unknown / Special Room |
+| ★ | Orange | Other Room (Treasure, Sacrifice, etc.) |
 | ✕ | Dark blue | Empty — confirmed no room at this position |
 
 ---
@@ -66,4 +66,4 @@ The boss room cell's own neighbors are **not** checked against rule 3 — that i
 
 ## Stack
 
-Single self-contained HTML file — vanilla HTML, CSS, and JavaScript. No dependencies, no build step. Works offline.
+Vanilla HTML, CSS, and JavaScript — three files, no dependencies, no build step. Works offline and can be hosted statically (e.g. GitHub Pages).
