@@ -19,12 +19,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const ALL_MARK_CLASSES = [
         'marked-white', 'marked-black', 'marked-red',
-        'marked-skull', 'marked-question', 'marked-empty-room'
+        'marked-skull', 'marked-other', 'marked-empty-room'
     ];
 
     function getCellText(color) {
         if (color === 'skull') return '💀';
-        if (color === 'question') return '?';
+        if (color === 'other') return '★';
         if (color === 'empty-room') return '✕';
         return '';
     }
@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function() {
             black: '#2d3436',
             red: '#e74c3c',
             skull: '#7f8c8d',
-            question: '#f39c12',
+            other: '#f39c12',
             'empty-room': '#1a1a30'
         };
 

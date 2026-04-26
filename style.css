@@ -200,7 +200,7 @@ h1 {
 .cell.marked-black    { background-color: #2d3436; }
 .cell.marked-red      { background-color: #e74c3c; }
 .cell.marked-skull    { background-color: #7f8c8d; }
-.cell.marked-question { background-color: #f39c12; }
+.cell.marked-other { background-color: #f39c12; }
 
 .cell.marked-empty-room {
     background-color: #1a1a30;
@@ -298,7 +298,7 @@ h1 {
 .color-black    { background-color: #2d3436; }
 .color-red      { background-color: #e74c3c; }
 .color-skull    { background-color: #7f8c8d; }
-.color-question { background-color: #f39c12; }
+.color-other { background-color: #f39c12; }
 
 .color-empty-room {
     background-color: #1a1a30;
