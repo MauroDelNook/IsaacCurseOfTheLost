@@ -4,6 +4,13 @@
 
 ---
 
+## [0.2.2] — 2026-04-26
+
+### Changed
+- Rewrote instructions block: replaced stale v0.1 copy with actionable tips (start from center, arrow button usage, ✕ accuracy tip, special room shape limitation)
+
+---
+
 ## [0.2.1] — 2026-04-26
 
 ### Changed
