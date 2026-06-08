@@ -163,6 +163,69 @@ h1 {
 .legend-possible { color: #ffd700; }
 .legend-impossible { color: #888; }
 
+/* ── Secret Room section ── */
+.secret-section {
+    background: rgba(5, 20, 10, 0.85);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 25px;
+    border: 1px solid #1a6b3a;
+}
+
+.secret-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.secret-label {
+    color: #52b788;
+    font-weight: bold;
+    font-size: 1.05rem;
+}
+
+.secret-description {
+    color: #2d7a4f;
+    font-size: 0.82rem;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+#secret-toggle:checked + .toggle-slider {
+    background-color: #1a6b3a;
+    border-color: #52b788;
+    box-shadow: 0 0 8px rgba(82, 183, 136, 0.6);
+}
+
+.secret-info {
+    margin-top: 14px;
+    border-top: 1px solid #1a4a2f;
+    padding-top: 12px;
+}
+
+#secret-stats {
+    color: #e6e6e6;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.stat-sr  { color: #52b788; font-weight: bold; }
+.stat-ssr { color: #c084d4; font-weight: bold; }
+
+.secret-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.8rem;
+}
+
+.legend-sr       { color: #52b788; }
+.legend-ssr      { color: #c084d4; }
+.legend-wall-info  { color: #7a9a8a; font-style: italic; }
+.legend-found-note { color: #7a9a8a; font-style: italic; }
+
 /* ── Grid ── */
 .grid-container {
     display: flex;
@@ -196,6 +259,12 @@ h1 {
     background-color: rgba(76, 201, 240, 0.2) !important;
 }
 
+.cell-text {
+    position: relative;
+    z-index: 1;
+    pointer-events: none;
+}
+
 .cell.marked-white    { background-color: #ffffff; }
 .cell.marked-black    { background-color: #2d3436; }
 .cell.marked-red      { background-color: #e74c3c; }
@@ -205,6 +274,18 @@ h1 {
 .cell.marked-empty-room {
     background-color: #1a1a30;
     color: #5a5a82;
+    font-size: 18px;
+}
+
+.cell.marked-sr {
+    background-color: #1a3d28;
+    color: #52b788;
+    font-size: 20px;
+}
+
+.cell.marked-ssr {
+    background-color: #2a1040;
+    color: #c084d4;
     font-size: 18px;
 }
 
@@ -240,6 +321,81 @@ h1 {
 @keyframes pulseGold {
     0%, 100% { box-shadow: inset 0 0 0 2px #ffd700, 0 0 6px rgba(255,215,0,0.3); }
     50%       { box-shadow: inset 0 0 0 2px #ffd700, 0 0 16px rgba(255,215,0,0.85); }
+}
+
+/* ── Secret Room wall strips ── */
+.wall {
+    position: absolute;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s, background-color 0.15s;
+    border-radius: 2px;
+}
+
+.wall-n { top: 0;    left: 3px;  right: 3px;  height: 8px; }
+.wall-s { bottom: 0; left: 3px;  right: 3px;  height: 8px; }
+.wall-e { top: 3px;  right: 0;   bottom: 3px; width: 8px;  }
+.wall-w { top: 3px;  left: 0;    bottom: 3px; width: 8px;  }
+
+.wall.wall-active {
+    opacity: 1;
+    pointer-events: auto;
+    cursor: pointer;
+    background: rgba(82, 183, 136, 0.35);
+}
+
+.wall.wall-active:hover {
+    background: rgba(82, 183, 136, 0.65);
+}
+
+.wall.wall-active.wall-blocked {
+    background: rgba(220, 70, 60, 0.55);
+}
+
+.wall.wall-active.wall-blocked:hover {
+    background: rgba(220, 70, 60, 0.8);
+}
+
+/* ── SR / SSR candidate cells ── */
+.cell.sr-candidate {
+    animation: pulseSR 1.8s ease-in-out infinite;
+}
+
+.cell.sr-candidate::before {
+    content: '🗝';
+    position: absolute;
+    font-size: 9px;
+    bottom: 1px;
+    left: 2px;
+    pointer-events: none;
+    line-height: 1;
+    z-index: 5;
+}
+
+.cell.ssr-candidate {
+    animation: pulseSSR 1.8s ease-in-out infinite;
+}
+
+.cell.ssr-candidate::before {
+    content: '⭐';
+    position: absolute;
+    font-size: 8px;
+    bottom: 1px;
+    left: 2px;
+    pointer-events: none;
+    line-height: 1;
+    z-index: 5;
+}
+
+@keyframes pulseSR {
+    0%, 100% { box-shadow: inset 0 0 0 2px #52b788, 0 0 5px rgba(82, 183, 136, 0.3); }
+    50%       { box-shadow: inset 0 0 0 2px #52b788, 0 0 14px rgba(82, 183, 136, 0.85); }
+}
+
+@keyframes pulseSSR {
+    0%, 100% { box-shadow: inset 0 0 0 2px #c084d4, 0 0 5px rgba(192, 132, 212, 0.3); }
+    50%       { box-shadow: inset 0 0 0 2px #c084d4, 0 0 14px rgba(192, 132, 212, 0.85); }
 }
 
 /* ── Controls ── */
@@ -308,6 +464,20 @@ h1 {
 }
 
 .color-empty-room.selected { border-color: #f72585 !important; }
+
+.color-sr {
+    background-color: #1a3d28;
+    border-color: #52b788 !important;
+    font-size: 18px;
+}
+
+.color-ssr {
+    background-color: #2a1040;
+    border-color: #c084d4 !important;
+    font-size: 16px;
+}
+
+.color-sr.selected, .color-ssr.selected { border-color: #f72585 !important; }
 
 .buttons {
     display: flex;

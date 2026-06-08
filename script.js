@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const colorOptions = document.querySelectorAll('.color-option');
     const githubLink = document.getElementById('github-link');
     const voidToggle = document.getElementById('void-toggle');
+    const secretToggle = document.getElementById('secret-toggle');
     const upBtn = document.getElementById('up-btn');
     const downBtn = document.getElementById('down-btn');
     const leftBtn = document.getElementById('left-btn');
@@ -13,29 +14,35 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedColor = 'white';
     let markedCells = {};
     let isVoidMode = false;
+    let isSecretMode = false;
+    let blockedWalls = new Set();
 
     githubLink.href = 'https://github.com/MauroDelNook';
     githubLink.textContent = 'MauroDelNook';
 
     const ALL_MARK_CLASSES = [
         'marked-white', 'marked-black', 'marked-red',
-        'marked-skull', 'marked-other', 'marked-empty-room'
+        'marked-skull', 'marked-other', 'marked-empty-room',
+        'marked-sr', 'marked-ssr'
     ];
 
     function getCellText(color) {
         if (color === 'skull') return '💀';
         if (color === 'other') return '★';
         if (color === 'empty-room') return '✕';
+        if (color === 'sr') return '❔';
+        if (color === 'ssr') return '❓';
         return '';
     }
 
     function applyMarkToCell(cell, color) {
         cell.classList.remove(...ALL_MARK_CLASSES);
+        const textEl = cell.querySelector('.cell-text');
         if (color) {
             cell.classList.add(`marked-${color}`);
-            cell.textContent = getCellText(color);
+            if (textEl) textEl.textContent = getCellText(color);
         } else {
-            cell.textContent = '';
+            if (textEl) textEl.textContent = '';
         }
     }
 
@@ -115,10 +122,133 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // ── Secret Room logic ──
+
+    const DIRS = [
+        { dr: -1, dc:  0, myWall: 'N', theirWall: 'S' },
+        { dr:  1, dc:  0, myWall: 'S', theirWall: 'N' },
+        { dr:  0, dc:  1, myWall: 'E', theirWall: 'W' },
+        { dr:  0, dc: -1, myWall: 'W', theirWall: 'E' },
+    ];
+
+    function isRealRoom(r, c) {
+        if (r < 0 || r >= 13 || c < 0 || c >= 13) return false;
+        const type = markedCells[`${r}-${c}`];
+        return type && type !== 'empty-room';
+    }
+
+    function updateSecretRoomMarkers() {
+        document.querySelectorAll('.cell').forEach(cell => {
+            cell.classList.remove('sr-candidate', 'ssr-candidate');
+            cell.querySelectorAll('.wall').forEach(w => {
+                w.classList.remove('wall-active', 'wall-blocked');
+            });
+        });
+
+        if (!isSecretMode) return;
+
+        const srFound  = Object.values(markedCells).some(v => v === 'sr');
+        const ssrFound = Object.values(markedCells).some(v => v === 'ssr');
+
+        // Highlight empty cells that are SR or SSR candidates (only for unfound types)
+        if (!srFound || !ssrFound) {
+            for (let r = 0; r < 13; r++) {
+                for (let c = 0; c < 13; c++) {
+                    if (markedCells[`${r}-${c}`]) continue;
+
+                    let totalRoom = 0, unchecked = 0;
+                    for (const { dr, dc, theirWall } of DIRS) {
+                        const nr = r + dr, nc = c + dc;
+                        if (!isRealRoom(nr, nc)) continue;
+                        totalRoom++;
+                        if (!blockedWalls.has(`${nr}-${nc}-${theirWall}`)) unchecked++;
+                    }
+
+                    if (totalRoom === 0 || unchecked < totalRoom) continue;
+
+                    // SR and SSR cannot be adjacent to a boss room
+                    const touchesBoss = DIRS.some(({ dr, dc }) => markedCells[`${r + dr}-${c + dc}`] === 'skull');
+                    if (touchesBoss) continue;
+
+                    const cell = document.querySelector(`.cell[data-row="${r}"][data-col="${c}"]`);
+                    if (!cell) continue;
+                    if (totalRoom >= 3 && !srFound) {
+                        cell.classList.add('sr-candidate');
+                    } else if (totalRoom === 1 && !ssrFound) {
+                        const touchesSR = DIRS.some(({ dr, dc }) => markedCells[`${r + dr}-${c + dc}`] === 'sr');
+                        if (!touchesSR) cell.classList.add('ssr-candidate');
+                    }
+                }
+            }
+        }
+
+        // Show wall strips on room cells whose walls face empty cells
+        // (sr/ssr cells are already found — no need to bomb their walls)
+        for (const key in markedCells) {
+            const type = markedCells[key];
+            if (type === 'empty-room' || type === 'sr' || type === 'ssr') continue;
+            const [r, c] = key.split('-').map(Number);
+            const cell = document.querySelector(`.cell[data-row="${r}"][data-col="${c}"]`);
+            if (!cell) continue;
+
+            for (const { dr, dc, myWall } of DIRS) {
+                const nr = r + dr, nc = c + dc;
+                if (nr < 0 || nr >= 13 || nc < 0 || nc >= 13) continue;
+                if (markedCells[`${nr}-${nc}`]) continue; // adjacent cell is not empty
+
+                const wallEl = cell.querySelector(`.wall-${myWall.toLowerCase()}`);
+                if (!wallEl) continue;
+                wallEl.classList.add('wall-active');
+                if (blockedWalls.has(`${r}-${c}-${myWall}`)) wallEl.classList.add('wall-blocked');
+            }
+        }
+
+        updateSecretStats();
+    }
+
+    function updateSecretStats() {
+        const srFound  = Object.values(markedCells).some(v => v === 'sr');
+        const ssrFound = Object.values(markedCells).some(v => v === 'ssr');
+        const srCount  = document.querySelectorAll('.sr-candidate').length;
+        const ssrCount = document.querySelectorAll('.ssr-candidate').length;
+        const statsEl  = document.getElementById('secret-stats');
+
+        const parts = [];
+        if (srFound)        parts.push(`<span class="stat-sr">❔ Secret Room found!</span>`);
+        else if (srCount > 0) parts.push(`<span class="stat-sr">${srCount} possible Secret Room${srCount !== 1 ? 's' : ''}</span>`);
+
+        if (ssrFound)        parts.push(`<span class="stat-ssr">❓ Super Secret Room found!</span>`);
+        else if (ssrCount > 0) parts.push(`<span class="stat-ssr">${ssrCount} possible Super Secret Room${ssrCount !== 1 ? 's' : ''}</span>`);
+
+        if (parts.length === 0) {
+            const hasRooms = Object.values(markedCells).some(v => v !== 'empty-room');
+            statsEl.textContent = hasRooms
+                ? 'No candidates found — all possible spots checked or ruled out.'
+                : 'No rooms marked yet. Mark rooms to detect possible Secret Room locations.';
+        } else {
+            statsEl.innerHTML = parts.join(' &nbsp;·&nbsp; ');
+        }
+    }
+
+    function handleWallClick(e, r, c, dir) {
+        e.stopPropagation();
+        if (!isSecretMode) return;
+        const wallKey = `${r}-${c}-${dir}`;
+        if (blockedWalls.has(wallKey)) blockedWalls.delete(wallKey);
+        else blockedWalls.add(wallKey);
+        updateSecretRoomMarkers();
+    }
+
     voidToggle.addEventListener('change', function() {
         isVoidMode = this.checked;
         document.getElementById('void-info').style.display = isVoidMode ? 'block' : 'none';
         updateDeliriumMarkers();
+    });
+
+    secretToggle.addEventListener('change', function() {
+        isSecretMode = this.checked;
+        document.getElementById('secret-info').style.display = isSecretMode ? 'block' : 'none';
+        updateSecretRoomMarkers();
     });
 
     // ── Grid creation ──
@@ -129,6 +259,19 @@ document.addEventListener('DOMContentLoaded', function() {
             cell.className = 'cell';
             cell.dataset.row = row;
             cell.dataset.col = col;
+
+            const textSpan = document.createElement('span');
+            textSpan.className = 'cell-text';
+            cell.appendChild(textSpan);
+
+            ['N', 'S', 'E', 'W'].forEach(dir => {
+                const wall = document.createElement('div');
+                wall.className = `wall wall-${dir.toLowerCase()}`;
+                wall.addEventListener('click', function(e) {
+                    handleWallClick(e, row, col, dir);
+                });
+                cell.appendChild(wall);
+            });
 
             cell.addEventListener('click', function() {
                 const r = parseInt(this.dataset.row);
@@ -143,6 +286,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     applyMarkToCell(this, selectedColor);
                 }
                 updateDeliriumMarkers();
+                updateSecretRoomMarkers();
             });
 
             grid.appendChild(cell);
@@ -154,10 +298,13 @@ document.addEventListener('DOMContentLoaded', function() {
     clearBtn.addEventListener('click', function() {
         document.querySelectorAll('.cell').forEach(cell => {
             applyMarkToCell(cell, null);
-            cell.classList.remove('boss-possible', 'boss-impossible');
+            cell.classList.remove('boss-possible', 'boss-impossible', 'sr-candidate', 'ssr-candidate');
+            cell.querySelectorAll('.wall').forEach(w => w.classList.remove('wall-active', 'wall-blocked'));
         });
         markedCells = {};
+        blockedWalls = new Set();
         updateDeliriumMarkers();
+        updateSecretRoomMarkers();
     });
 
     // ── Download ──
@@ -193,7 +340,9 @@ document.addEventListener('DOMContentLoaded', function() {
             red: '#e74c3c',
             skull: '#7f8c8d',
             other: '#f39c12',
-            'empty-room': '#1a1a30'
+            'empty-room': '#1a1a30',
+            sr: '#1a3d28',
+            ssr: '#2a1040',
         };
 
         for (let row = 0; row < 13; row++) {
@@ -275,7 +424,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         document.querySelectorAll('.cell').forEach(cell => {
             applyMarkToCell(cell, null);
-            cell.classList.remove('boss-possible', 'boss-impossible');
+            cell.classList.remove('boss-possible', 'boss-impossible', 'sr-candidate', 'ssr-candidate');
+            cell.querySelectorAll('.wall').forEach(w => w.classList.remove('wall-active', 'wall-blocked'));
         });
 
         for (const key in markedCells) {
@@ -296,7 +446,26 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
+        const newBlockedWalls = new Set();
+        for (const wallKey of blockedWalls) {
+            const lastDash = wallKey.lastIndexOf('-');
+            const dir = wallKey.slice(lastDash + 1);
+            const [row, col] = wallKey.slice(0, lastDash).split('-').map(Number);
+            let newRow = row, newCol = col;
+
+            if (direction === 'up')    newRow--;
+            if (direction === 'down')  newRow++;
+            if (direction === 'left')  newCol--;
+            if (direction === 'right') newCol++;
+
+            if (newRow >= 0 && newRow < 13 && newCol >= 0 && newCol < 13) {
+                newBlockedWalls.add(`${newRow}-${newCol}-${dir}`);
+            }
+        }
+
         markedCells = newMarkedCells;
+        blockedWalls = newBlockedWalls;
         updateDeliriumMarkers();
+        updateSecretRoomMarkers();
     }
 });

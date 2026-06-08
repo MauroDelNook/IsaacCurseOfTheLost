@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+### Added
+- **Secret Rooms toggle panel** — new section (green theme) with live candidate detection
+  - Empty cells adjacent to 3–4 rooms highlighted with green pulse + 🗝 icon (Secret Room candidate)
+  - Empty cells adjacent to exactly 1 room highlighted with purple pulse + ⭐ icon (Super Secret Room candidate)
+- **Wall strips** — clickable edge strips on room cells facing empty space; green = unchecked, red = already bombed
+  - Any single red (blocked) strip instantly eliminates that cell as a SR/SSR candidate
+  - Strip positions shift correctly when using the Move Marked Cells arrows
+- **Found markers** — new map symbols ❔ (Secret Room found) and ❓ (Super Secret Room found); placing either stops detection for that type
+- **Exclusion rules** — SR/SSR candidates cannot be adjacent to boss rooms (💀) or to each other (❔ cells exclude adjacent SSR candidates)
+
+### Fixed
+- Replaced `cell.textContent` assignment with a `cell-text` span to prevent wall strip DOM nodes from being destroyed on cell re-mark
+
 ---
 
 ## [0.2.2] — 2026-04-26
