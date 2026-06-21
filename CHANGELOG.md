@@ -13,9 +13,7 @@
 - **Exclusion rules** — SR/SSR candidates cannot be adjacent to boss rooms (💀) or to each other (❔ cells exclude adjacent SSR candidates)
 
 ### Changed
-- SR detection lowers its adjacency threshold from 3 to 1 when SSR is already found, reflecting that any remaining empty cell is a valid SR spot
-- SR detection falls back to 2-adjacent cells when no 3+ adjacent candidates exist and SSR is not yet found
-- Fixed: SR candidates adjacent to a placed SSR marker are no longer highlighted (SR and SSR cannot share a wall)
+- SR detection uses cascading adjacency thresholds: prefer 3+, fall back to 2, then 1 (only if SSR found) to more intelligently rank candidates
 - Downloaded map filename now includes a timestamp (e.g., `isaac_map_20260426143022.png`) to prevent overwrites
 
 ### Fixed

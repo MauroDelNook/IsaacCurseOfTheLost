@@ -191,9 +191,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // SR: prefer 3+ adjacent; if none, fall back to 2; if SSR known, allow any (1+)
             if (!srFound) {
-                const srPool = ssrFound
-                    ? [...srBuckets[3], ...srBuckets[2], ...srBuckets[1]]
-                    : (srBuckets[3].length > 0 ? srBuckets[3] : srBuckets[2]);
+                const srPool = srBuckets[3].length > 0 ? srBuckets[3]
+                    : srBuckets[2].length > 0     ? srBuckets[2]
+                    : ssrFound                    ? srBuckets[1]
+                    : [];
                 srPool.forEach(cell => cell.classList.add('sr-candidate'));
             }
 
