@@ -415,7 +415,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const link = document.createElement('a');
-        link.download = 'isaac_map.png';
+        link.download = `isaac_map_${new Date().toISOString().replace(/\D/g, '').slice(0, 14)}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
     });

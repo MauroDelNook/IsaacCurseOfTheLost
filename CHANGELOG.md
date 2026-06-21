@@ -16,6 +16,7 @@
 - SR detection lowers its adjacency threshold from 3 to 1 when SSR is already found, reflecting that any remaining empty cell is a valid SR spot
 - SR detection falls back to 2-adjacent cells when no 3+ adjacent candidates exist and SSR is not yet found
 - Fixed: SR candidates adjacent to a placed SSR marker are no longer highlighted (SR and SSR cannot share a wall)
+- Downloaded map filename now includes a timestamp (e.g., `isaac_map_20260426143022.png`) to prevent overwrites
 
 ### Fixed
 - Replaced `cell.textContent` assignment with a `cell-text` span to prevent wall strip DOM nodes from being destroyed on cell re-mark
