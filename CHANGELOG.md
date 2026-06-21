@@ -12,6 +12,9 @@
 - **Found markers** — new map symbols ❔ (Secret Room found) and ❓ (Super Secret Room found); placing either stops detection for that type
 - **Exclusion rules** — SR/SSR candidates cannot be adjacent to boss rooms (💀) or to each other (❔ cells exclude adjacent SSR candidates)
 
+### Changed
+- SR detection lowers its adjacency threshold from 3 to 1 when SSR is already found, reflecting that any remaining empty cell is a valid SR spot
+
 ### Fixed
 - Replaced `cell.textContent` assignment with a `cell-text` span to prevent wall strip DOM nodes from being destroyed on cell re-mark
 

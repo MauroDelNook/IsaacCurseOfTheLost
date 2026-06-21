@@ -172,7 +172,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     const cell = document.querySelector(`.cell[data-row="${r}"][data-col="${c}"]`);
                     if (!cell) continue;
-                    if (totalRoom >= 3 && !srFound) {
+                    const minAdj = ssrFound ? 1 : 3;
+                    if (totalRoom >= minAdj && !srFound) {
                         cell.classList.add('sr-candidate');
                     } else if (totalRoom === 1 && !ssrFound) {
                         const touchesSR = DIRS.some(({ dr, dc }) => markedCells[`${r + dr}-${c + dc}`] === 'sr');
