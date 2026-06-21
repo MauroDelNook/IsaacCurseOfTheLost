@@ -152,6 +152,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Highlight empty cells that are SR or SSR candidates (only for unfound types)
         if (!srFound || !ssrFound) {
+            const srBuckets = { 3: [], 2: [], 1: [] };
+            const ssrList = [];
+
             for (let r = 0; r < 13; r++) {
                 for (let c = 0; c < 13; c++) {
                     if (markedCells[`${r}-${c}`]) continue;
@@ -166,21 +169,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     if (totalRoom === 0 || unchecked < totalRoom) continue;
 
-                    // SR and SSR cannot be adjacent to a boss room
                     const touchesBoss = DIRS.some(({ dr, dc }) => markedCells[`${r + dr}-${c + dc}`] === 'skull');
                     if (touchesBoss) continue;
 
+                    const touchesSSR = DIRS.some(({ dr, dc }) => markedCells[`${r + dr}-${c + dc}`] === 'ssr');
+
                     const cell = document.querySelector(`.cell[data-row="${r}"][data-col="${c}"]`);
                     if (!cell) continue;
-                    const minAdj = ssrFound ? 1 : 3;
-                    if (totalRoom >= minAdj && !srFound) {
-                        cell.classList.add('sr-candidate');
-                    } else if (totalRoom === 1 && !ssrFound) {
+
+                    if (!srFound && !touchesSSR) {
+                        const bucket = totalRoom >= 3 ? 3 : totalRoom;
+                        if (srBuckets[bucket]) srBuckets[bucket].push(cell);
+                    }
+
+                    if (!ssrFound && totalRoom === 1) {
                         const touchesSR = DIRS.some(({ dr, dc }) => markedCells[`${r + dr}-${c + dc}`] === 'sr');
-                        if (!touchesSR) cell.classList.add('ssr-candidate');
+                        if (!touchesSR) ssrList.push(cell);
                     }
                 }
             }
+
+            // SR: prefer 3+ adjacent; if none, fall back to 2; if SSR known, allow any (1+)
+            if (!srFound) {
+                const srPool = ssrFound
+                    ? [...srBuckets[3], ...srBuckets[2], ...srBuckets[1]]
+                    : (srBuckets[3].length > 0 ? srBuckets[3] : srBuckets[2]);
+                srPool.forEach(cell => cell.classList.add('sr-candidate'));
+            }
+
+            ssrList.forEach(cell => cell.classList.add('ssr-candidate'));
         }
 
         // Show wall strips on room cells whose walls face empty cells
