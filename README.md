@@ -22,6 +22,8 @@ Lets you manually reconstruct the floor map on a 13×13 grid (the maximum map si
 | 💀 | Grey | Boss Room |
 | ★ | Orange | Other Room (Treasure, Sacrifice, etc.) |
 | ✕ | Dark blue | Empty — confirmed no room at this position |
+| ❔ | Light grey | Secret Room (found) |
+| ❔ | Dark grey | Super Secret Room (found) |
 
 ---
 
@@ -31,7 +33,45 @@ Lets you manually reconstruct the floor map on a 13×13 grid (the maximum map si
 - **Click same symbol again** — removes the mark
 - **Arrow buttons** — shifts the entire marked map one cell in that direction (useful when you realize your starting reference is off)
 - **Clear Grid** — resets all marks
-- **Download Map** — exports the current grid as a PNG image
+- **Download Map** — exports the current grid as a PNG image with a timestamp in the filename
+
+---
+
+## Secret Room Detection
+
+Enable the **🗝️ Secret Rooms** toggle to highlight possible Secret Room and Super Secret Room locations.
+
+### How it works
+
+The tool scans every empty cell on the grid and counts how many marked rooms are adjacent to it (up, down, left, right). Candidates are highlighted based on the following rules:
+
+**Secret Room (🗝 green pulse):**
+- Prefers empty cells adjacent to **3–4 rooms** (the game always spawns the SR where it touches the most rooms)
+- Falls back to **2 adjacent** rooms if no 3–4 candidates exist
+- Falls back to **1 adjacent** room only if the Super Secret Room is already found and no 2+ candidates exist
+
+**Super Secret Room (⭐ purple pulse):**
+- Empty cells adjacent to exactly **1 room** (dead-end position)
+
+**Exclusion rules:**
+- Neither SR nor SSR can be adjacent to a Boss Room (💀)
+- SR candidates are never shown adjacent to a placed SSR marker (they cannot share a wall)
+- SSR candidates are never shown adjacent to a placed SR marker
+
+### Wall strips
+
+When Secret Room mode is active, room cells show colored edge strips on sides that face empty space — these represent walls you can bomb:
+
+| Strip color | Meaning |
+|-------------|---------|
+| Green | Wall not yet checked — worth bombing |
+| Red | Already checked (bombed and found nothing) |
+
+Click any wall strip to toggle it red. A cell with all its strips marked red is automatically excluded as a candidate.
+
+### Marking found rooms
+
+Once you find a Secret Room or Super Secret Room, select the matching ❔ symbol from **Map Symbols** and click the cell. The tool will stop showing candidates for that room type.
 
 ---
 

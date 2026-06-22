@@ -9,12 +9,15 @@
 - **Wall strips** — clickable edge strips on room cells facing empty space; green = unchecked, red = already bombed
   - Any single red (blocked) strip instantly eliminates that cell as a SR/SSR candidate
   - Strip positions shift correctly when using the Move Marked Cells arrows
-- **Found markers** — new map symbols ❔ (Secret Room found) and ❓ (Super Secret Room found); placing either stops detection for that type
+- **Found markers** — new map symbols ❔ (Secret Room found) and ❔ (Super Secret Room found); placing either stops detection for that type
 - **Exclusion rules** — SR/SSR candidates cannot be adjacent to boss rooms (💀) or to each other (❔ cells exclude adjacent SSR candidates)
 
 ### Changed
 - SR detection uses cascading adjacency thresholds: prefer 3+, fall back to 2, then 1 (only if SSR found) to more intelligently rank candidates
 - Downloaded map filename now includes a timestamp (e.g., `isaac_map_20260426143022.png`) to prevent overwrites
+- **SR/SSR marker styling** — restyled as gray backgrounds (SR: #808080 medium gray, SSR: #333333 dark gray) with white ❔ icon for both, improving visual consistency
+- **Legend and stats colors** — updated to gray palette to match new SR/SSR marker styling
+- README: added "Secret Room Detection" section with detailed rules, wall strip guide, and marking instructions
 
 ### Fixed
 - Replaced `cell.textContent` assignment with a `cell-text` span to prevent wall strip DOM nodes from being destroyed on cell re-mark

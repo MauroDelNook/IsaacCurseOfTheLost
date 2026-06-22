@@ -211,8 +211,8 @@ h1 {
     line-height: 1.5;
 }
 
-.stat-sr  { color: #52b788; font-weight: bold; }
-.stat-ssr { color: #c084d4; font-weight: bold; }
+.stat-sr  { color: #c0c0c0; font-weight: bold; }
+.stat-ssr { color: #909090; font-weight: bold; }
 
 .secret-legend {
     display: flex;
@@ -221,8 +221,8 @@ h1 {
     font-size: 0.8rem;
 }
 
-.legend-sr       { color: #52b788; }
-.legend-ssr      { color: #c084d4; }
+.legend-sr       { color: #c0c0c0; }
+.legend-ssr      { color: #909090; }
 .legend-wall-info  { color: #7a9a8a; font-style: italic; }
 .legend-found-note { color: #7a9a8a; font-style: italic; }
 
@@ -278,14 +278,14 @@ h1 {
 }
 
 .cell.marked-sr {
-    background-color: #1a3d28;
-    color: #52b788;
+    background-color: #808080;
+    color: #ffffff;
     font-size: 20px;
 }
 
 .cell.marked-ssr {
-    background-color: #2a1040;
-    color: #c084d4;
+    background-color: #333333;
+    color: #ffffff;
     font-size: 18px;
 }
 
@@ -466,14 +466,16 @@ h1 {
 .color-empty-room.selected { border-color: #f72585 !important; }
 
 .color-sr {
-    background-color: #1a3d28;
-    border-color: #52b788 !important;
+    background-color: #808080;
+    border-color: #808080 !important;
+    color: #ffffff;
     font-size: 18px;
 }
 
 .color-ssr {
-    background-color: #2a1040;
-    border-color: #c084d4 !important;
+    background-color: #333333;
+    border-color: #333333 !important;
+    color: #ffffff;
     font-size: 16px;
 }
 

@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (color === 'other') return '★';
         if (color === 'empty-room') return '✕';
         if (color === 'sr') return '❔';
-        if (color === 'ssr') return '❓';
+        if (color === 'ssr') return '❔';
         return '';
     }
 
@@ -236,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (srFound)        parts.push(`<span class="stat-sr">❔ Secret Room found!</span>`);
         else if (srCount > 0) parts.push(`<span class="stat-sr">${srCount} possible Secret Room${srCount !== 1 ? 's' : ''}</span>`);
 
-        if (ssrFound)        parts.push(`<span class="stat-ssr">❓ Super Secret Room found!</span>`);
+        if (ssrFound)        parts.push(`<span class="stat-ssr">❔ Super Secret Room found!</span>`);
         else if (ssrCount > 0) parts.push(`<span class="stat-ssr">${ssrCount} possible Super Secret Room${ssrCount !== 1 ? 's' : ''}</span>`);
 
         if (parts.length === 0) {
@@ -360,8 +360,8 @@ document.addEventListener('DOMContentLoaded', function() {
             skull: '#7f8c8d',
             other: '#f39c12',
             'empty-room': '#1a1a30',
-            sr: '#1a3d28',
-            ssr: '#2a1040',
+            sr: '#808080',
+            ssr: '#333333',
         };
 
         for (let row = 0; row < 13; row++) {
@@ -383,7 +383,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     ctx.font = `${type === 'empty-room' ? cellSize * 0.5 : cellSize * 0.6}px Arial`;
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-                    ctx.fillStyle = type === 'empty-room' ? '#7070a8' : '#000000';
+                    ctx.fillStyle = type === 'empty-room' ? '#7070a8' : (type === 'sr' || type === 'ssr') ? '#ffffff' : '#000000';
                     ctx.fillText(text, x + w / 2, y + h / 2);
                 }
 
