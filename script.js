@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const githubLink = document.getElementById('github-link');
     const voidToggle = document.getElementById('void-toggle');
     const secretToggle = document.getElementById('secret-toggle');
+    const usrToggle = document.getElementById('usr-toggle');
     const upBtn = document.getElementById('up-btn');
     const downBtn = document.getElementById('down-btn');
     const leftBtn = document.getElementById('left-btn');
@@ -15,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let markedCells = {};
     let isVoidMode = false;
     let isSecretMode = false;
+    let isUsrMode = false;
     let blockedWalls = new Set();
 
     githubLink.href = 'https://github.com/MauroDelNook';
@@ -23,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const ALL_MARK_CLASSES = [
         'marked-white', 'marked-black', 'marked-red',
         'marked-skull', 'marked-other', 'marked-empty-room',
-        'marked-sr', 'marked-ssr'
+        'marked-sr', 'marked-ssr', 'marked-usr'
     ];
 
     function getCellText(color) {
@@ -32,6 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (color === 'empty-room') return '✕';
         if (color === 'sr') return '❔';
         if (color === 'ssr') return '❔';
+        if (color === 'usr') return '❓';
         return '';
     }
 
@@ -134,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function isRealRoom(r, c) {
         if (r < 0 || r >= 13 || c < 0 || c >= 13) return false;
         const type = markedCells[`${r}-${c}`];
-        return type && type !== 'empty-room';
+        return type && type !== 'empty-room' && type !== 'red' && type !== 'usr';
     }
 
     function updateSecretRoomMarkers() {
@@ -205,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // (sr/ssr cells are already found — no need to bomb their walls)
         for (const key in markedCells) {
             const type = markedCells[key];
-            if (type === 'empty-room' || type === 'sr' || type === 'ssr') continue;
+            if (type === 'empty-room' || type === 'sr' || type === 'ssr' || type === 'usr') continue;
             const [r, c] = key.split('-').map(Number);
             const cell = document.querySelector(`.cell[data-row="${r}"][data-col="${c}"]`);
             if (!cell) continue;
@@ -249,6 +252,112 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // ── Ultra Secret Room logic ──
+
+    function updateUSRMarkers() {
+        document.querySelectorAll('.cell').forEach(cell => {
+            cell.classList.remove('usr-candidate');
+        });
+
+        if (!isUsrMode) return;
+
+        const usrFound = Object.values(markedCells).some(v => v === 'usr');
+
+        if (!usrFound) {
+            const usrBuckets = { 3: [], 2: [], 1: [] };
+
+            for (let r = 0; r < 13; r++) {
+                for (let c = 0; c < 13; c++) {
+                    if (markedCells[`${r}-${c}`]) continue; // candidate must be empty
+
+                    // USR must not be directly adjacent to any real room (only empty/red cells around it)
+                    let hasDirectRoom = false;
+                    for (const { dr, dc } of DIRS) {
+                        const nr = r + dr, nc = c + dc;
+                        if (nr < 0 || nr >= 13 || nc < 0 || nc >= 13) continue;
+                        const t = markedCells[`${nr}-${nc}`];
+                        if (t && t !== 'empty-room' && t !== 'red') {
+                            hasDirectRoom = true;
+                            break;
+                        }
+                    }
+                    if (hasDirectRoom) continue;
+
+                    // Count connections through valid adjacent red room positions
+                    let totalConnections = 0;
+                    for (const { dr, dc } of DIRS) {
+                        const nr = r + dr, nc = c + dc;
+                        if (nr < 0 || nr >= 13 || nc < 0 || nc >= 13) continue;
+
+                        const redT = markedCells[`${nr}-${nc}`];
+                        if (redT && redT !== 'red') continue; // adjacent cell must be empty or already a red room
+
+                        // Red room is invalid if adjacent to skull, SR, or SSR
+                        let validRR = true;
+                        for (const { dr: dr2, dc: dc2 } of DIRS) {
+                            const mr = nr + dr2, mc = nc + dc2;
+                            if (mr === r && mc === c) continue; // the USR cell itself — skip
+                            if (mr < 0 || mr >= 13 || mc < 0 || mc >= 13) continue;
+                            const mt = markedCells[`${mr}-${mc}`];
+                            if (mt === 'skull' || mt === 'sr' || mt === 'ssr') {
+                                validRR = false;
+                                break;
+                            }
+                        }
+                        if (!validRR) continue;
+
+                        // Count regular rooms adjacent to this red room position (excluding USR cell)
+                        for (const { dr: dr2, dc: dc2 } of DIRS) {
+                            const mr = nr + dr2, mc = nc + dc2;
+                            if (mr === r && mc === c) continue;
+                            if (mr < 0 || mr >= 13 || mc < 0 || mc >= 13) continue;
+                            const mt = markedCells[`${mr}-${mc}`];
+                            if (mt && mt !== 'empty-room' && mt !== 'red' && mt !== 'usr') {
+                                totalConnections++;
+                            }
+                        }
+                    }
+
+                    if (totalConnections === 0) continue;
+
+                    const cell = document.querySelector(`.cell[data-row="${r}"][data-col="${c}"]`);
+                    if (!cell) continue;
+
+                    const bucket = totalConnections >= 3 ? 3 : totalConnections;
+                    usrBuckets[bucket].push(cell);
+                }
+            }
+
+            // Show only the highest non-empty bucket (same cascade as SR)
+            const usrPool = usrBuckets[3].length > 0 ? usrBuckets[3]
+                : usrBuckets[2].length > 0            ? usrBuckets[2]
+                : usrBuckets[1];
+            usrPool.forEach(cell => cell.classList.add('usr-candidate'));
+        }
+
+        updateUSRStats(usrFound);
+    }
+
+    function updateUSRStats(found) {
+        const statsEl = document.getElementById('usr-stats');
+        if (!statsEl) return;
+
+        if (found) {
+            statsEl.innerHTML = `<span class="stat-usr">❓ Ultra Secret Room found!</span>`;
+            return;
+        }
+
+        const count = document.querySelectorAll('.usr-candidate').length;
+        if (count === 0) {
+            const hasRooms = Object.values(markedCells).some(v => v && v !== 'empty-room');
+            statsEl.textContent = hasRooms
+                ? 'No USR candidates — no valid isolated spots with Red Room access.'
+                : 'No rooms marked yet. Mark rooms to detect possible USR locations.';
+        } else {
+            statsEl.innerHTML = `<span class="stat-usr">${count} possible Ultra Secret Room location${count !== 1 ? 's' : ''}</span>`;
+        }
+    }
+
     function handleWallClick(e, r, c, dir) {
         e.stopPropagation();
         if (!isSecretMode) return;
@@ -268,6 +377,12 @@ document.addEventListener('DOMContentLoaded', function() {
         isSecretMode = this.checked;
         document.getElementById('secret-info').style.display = isSecretMode ? 'block' : 'none';
         updateSecretRoomMarkers();
+    });
+
+    usrToggle.addEventListener('change', function() {
+        isUsrMode = this.checked;
+        document.getElementById('usr-info').style.display = isUsrMode ? 'block' : 'none';
+        updateUSRMarkers();
     });
 
     // ── Grid creation ──
@@ -306,6 +421,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 updateDeliriumMarkers();
                 updateSecretRoomMarkers();
+                updateUSRMarkers();
             });
 
             grid.appendChild(cell);
@@ -317,13 +433,14 @@ document.addEventListener('DOMContentLoaded', function() {
     clearBtn.addEventListener('click', function() {
         document.querySelectorAll('.cell').forEach(cell => {
             applyMarkToCell(cell, null);
-            cell.classList.remove('boss-possible', 'boss-impossible', 'sr-candidate', 'ssr-candidate');
+            cell.classList.remove('boss-possible', 'boss-impossible', 'sr-candidate', 'ssr-candidate', 'usr-candidate');
             cell.querySelectorAll('.wall').forEach(w => w.classList.remove('wall-active', 'wall-blocked'));
         });
         markedCells = {};
         blockedWalls = new Set();
         updateDeliriumMarkers();
         updateSecretRoomMarkers();
+        updateUSRMarkers();
     });
 
     // ── Download ──
@@ -362,6 +479,7 @@ document.addEventListener('DOMContentLoaded', function() {
             'empty-room': '#1a1a30',
             sr: '#808080',
             ssr: '#333333',
+            usr: '#3a0000',
         };
 
         for (let row = 0; row < 13; row++) {
@@ -383,7 +501,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     ctx.font = `${type === 'empty-room' ? cellSize * 0.5 : cellSize * 0.6}px Arial`;
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-                    ctx.fillStyle = type === 'empty-room' ? '#7070a8' : (type === 'sr' || type === 'ssr') ? '#ffffff' : '#000000';
+                    ctx.fillStyle = type === 'empty-room' ? '#7070a8' : (type === 'sr' || type === 'ssr' || type === 'usr') ? '#ffffff' : '#000000';
                     ctx.fillText(text, x + w / 2, y + h / 2);
                 }
 
@@ -443,7 +561,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         document.querySelectorAll('.cell').forEach(cell => {
             applyMarkToCell(cell, null);
-            cell.classList.remove('boss-possible', 'boss-impossible', 'sr-candidate', 'ssr-candidate');
+            cell.classList.remove('boss-possible', 'boss-impossible', 'sr-candidate', 'ssr-candidate', 'usr-candidate');
             cell.querySelectorAll('.wall').forEach(w => w.classList.remove('wall-active', 'wall-blocked'));
         });
 
@@ -486,5 +604,6 @@ document.addEventListener('DOMContentLoaded', function() {
         blockedWalls = newBlockedWalls;
         updateDeliriumMarkers();
         updateSecretRoomMarkers();
+        updateUSRMarkers();
     }
 });

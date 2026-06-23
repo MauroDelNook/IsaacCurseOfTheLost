@@ -24,6 +24,7 @@ Lets you manually reconstruct the floor map on a 13×13 grid (the maximum map si
 | ✕ | Dark blue | Empty — confirmed no room at this position |
 | ❔ | Light grey | Secret Room (found) |
 | ❔ | Dark grey | Super Secret Room (found) |
+| ❓ | Dark maroon | Ultra Secret Room (found) |
 
 ---
 
@@ -72,6 +73,38 @@ Click any wall strip to toggle it red. A cell with all its strips marked red is 
 ### Marking found rooms
 
 Once you find a Secret Room or Super Secret Room, select the matching ❔ symbol from **Map Symbols** and click the cell. The tool will stop showing candidates for that room type.
+
+---
+
+## Ultra Secret Room Detection
+
+Enable the **❓ Ultra Secret Room** toggle to highlight possible USR locations.
+
+### How it works
+
+Ultra Secret Rooms are isolated — no direct door connections to the rest of the map. They can only be reached by opening a Red Room adjacent to them (Red Key, Crystal Key, Cracked Key, Soul of Cain, etc.).
+
+The tool scans for empty cells that:
+- Have **no real rooms as direct neighbors** (only empty cells or Red Rooms around them)
+- Are reachable through adjacent Red Room paths that connect to at least one regular room
+
+Candidates are prioritized by total connections through valid Red Room paths:
+
+| Priority | Connections | Likelihood |
+|----------|-------------|------------|
+| Highest | 3 or more | ~11.5× more likely than a 2-connection spot |
+| Fallback | 2 | ~11.5× more likely than a 1-connection spot |
+| Last resort | 1 | Only shown when no higher-priority spots exist |
+
+Only the **highest non-empty bucket** is displayed at a time.
+
+**A Red Room path is invalidated if it is adjacent to a Boss Room, Secret Room, or Super Secret Room.**
+
+### Tips
+
+- When you have multiple Red Room options, **mark the potential ones on the map** to visualize your choices. If the Red Room you open is adjacent to the USR, the USR door opens automatically when you enter it.
+- Prioritize opening the Red Room that connects to the highest number of other rooms — it covers more possible USR locations in one move.
+- Once you locate the USR, mark it with ❓ from Map Symbols to stop detection.
 
 ---
 
