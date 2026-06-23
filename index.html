@@ -18,6 +18,9 @@
             <p>➤ Use arrow buttons to shift the whole map if your starting position was off.</p>
             <p>➤ Mark confirmed empty spots with ✕ — it improves Delirium detection accuracy.</p>
             <p>➤ Special room shapes (2×2, L-shaped, narrow) aren't supported — mark each cell individually.</p>
+            <p>➤ Enable Secret Rooms to highlight likely Secret / Super Secret Room spots. Click a room's edge strips to cross out walls you've already checked.</p>
+            <p>➤ Enable Ultra Secret Room to find isolated spots reachable only via Red Rooms. Mark with ❓ once found.</p>
+            <p>➤ Mark potential Red Rooms to plan which wall to open — if the Red Room is adjacent to the USR, its door opens automatically when you enter.</p>
         </div>
 
         <div class="void-section">
@@ -36,6 +39,49 @@
                 <div class="void-legend">
                     <span class="legend-possible">⚠ Possible Delirium — fits a 2×2 block within bounds with no overlapping rooms</span>
                     <span class="legend-impossible">✕ Ruled Out — no valid 2×2 expansion exists (out of bounds or blocked by another room)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="secret-section">
+            <div class="secret-toggle-row">
+                <div>
+                    <div class="secret-label">🗝️ Secret Rooms</div>
+                    <div class="secret-description">Detect possible Secret Room &amp; Super Secret Room locations</div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="secret-toggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="secret-info" id="secret-info" style="display:none">
+                <div id="secret-stats">No rooms marked yet. Mark rooms to detect possible Secret Room locations.</div>
+                <div class="secret-legend">
+                    <span class="legend-sr">🗝 Possible Secret Room — adjacent to 3–4 rooms (narrows to 2, or 1 if SSR is known, when no better spots exist)</span>
+                    <span class="legend-ssr">⭐ Possible Super Secret Room — adjacent to 1 room (dead end)</span>
+                    <span class="legend-wall-info">Green edge strip = unchecked wall · Red edge strip = already checked (no bomb needed)</span>
+                    <span class="legend-found-note">Once found, mark with ❔ from Map Symbols to stop detection for that type.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="usr-section">
+            <div class="usr-toggle-row">
+                <div>
+                    <div class="usr-label">❓ Ultra Secret Room</div>
+                    <div class="usr-description">Detect possible Ultra Secret Room locations (isolated spots reachable via Red Rooms)</div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="usr-toggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="usr-info" id="usr-info" style="display:none">
+                <div id="usr-stats">No rooms marked yet. Mark rooms to detect possible USR locations.</div>
+                <div class="usr-legend">
+                    <span class="legend-usr">❓ Possible USR — isolated cell with 3+ connections to non-red rooms via adjacent Red Rooms (falls back to 2, then 1)</span>
+                    <span class="legend-usr-note">Red rooms adjacent to Boss, Secret, or Super Secret Rooms don't count as valid paths.</span>
+                    <span class="legend-usr-note">Once found, mark with ❓ from Map Symbols to stop detection.</span>
                 </div>
             </div>
         </div>
@@ -66,6 +112,9 @@
                     <div class="color-option color-skull" data-color="skull" title="Boss Room">💀</div>
                     <div class="color-option color-other" data-color="other" title="Other Room (Treasure, Sacrifice, etc.)">★</div>
                     <div class="color-option color-empty-room" data-color="empty-room" title="Empty Room (no room here)">✕</div>
+                    <div class="color-option color-sr" data-color="sr" title="Secret Room (found)">❔</div>
+                    <div class="color-option color-ssr" data-color="ssr" title="Super Secret Room (found)">❔</div>
+                    <div class="color-option color-usr" data-color="usr" title="Ultra Secret Room (found)">❓</div>
                 </div>
             </div>
 
@@ -83,5 +132,13 @@
     </div>
 
     <script src="script.js"></script>
+
+    <!--
+        Edmund McMillen. You little fucker. You made a shit of piece with your trash Isaac.
+        It's fucking bad this trash game. I will become back my money.
+        I hope you will in your next time a cow; on a trash farm, you sucker.
+
+        (Still bought it on 3 platforms tho)
+    -->
 </body>
 </html>

@@ -22,6 +22,9 @@ Lets you manually reconstruct the floor map on a 13×13 grid (the maximum map si
 | 💀 | Grey | Boss Room |
 | ★ | Orange | Other Room (Treasure, Sacrifice, etc.) |
 | ✕ | Dark blue | Empty — confirmed no room at this position |
+| ❔ | Light grey | Secret Room (found) |
+| ❔ | Dark grey | Super Secret Room (found) |
+| ❓ | Dark maroon | Ultra Secret Room (found) |
 
 ---
 
@@ -31,7 +34,77 @@ Lets you manually reconstruct the floor map on a 13×13 grid (the maximum map si
 - **Click same symbol again** — removes the mark
 - **Arrow buttons** — shifts the entire marked map one cell in that direction (useful when you realize your starting reference is off)
 - **Clear Grid** — resets all marks
-- **Download Map** — exports the current grid as a PNG image
+- **Download Map** — exports the current grid as a PNG image with a timestamp in the filename
+
+---
+
+## Secret Room Detection
+
+Enable the **🗝️ Secret Rooms** toggle to highlight possible Secret Room and Super Secret Room locations.
+
+### How it works
+
+The tool scans every empty cell on the grid and counts how many marked rooms are adjacent to it (up, down, left, right). Candidates are highlighted based on the following rules:
+
+**Secret Room (🗝 green pulse):**
+- Prefers empty cells adjacent to **3–4 rooms** (the game always spawns the SR where it touches the most rooms)
+- Falls back to **2 adjacent** rooms if no 3–4 candidates exist
+- Falls back to **1 adjacent** room only if the Super Secret Room is already found and no 2+ candidates exist
+
+**Super Secret Room (⭐ purple pulse):**
+- Empty cells adjacent to exactly **1 room** (dead-end position)
+
+**Exclusion rules:**
+- Neither SR nor SSR can be adjacent to a Boss Room (💀)
+- SR candidates are never shown adjacent to a placed SSR marker (they cannot share a wall)
+- SSR candidates are never shown adjacent to a placed SR marker
+
+### Wall strips
+
+When Secret Room mode is active, room cells show colored edge strips on sides that face empty space — these represent walls you can bomb:
+
+| Strip color | Meaning |
+|-------------|---------|
+| Green | Wall not yet checked — worth bombing |
+| Red | Already checked (bombed and found nothing) |
+
+Click any wall strip to toggle it red. A cell with all its strips marked red is automatically excluded as a candidate.
+
+### Marking found rooms
+
+Once you find a Secret Room or Super Secret Room, select the matching ❔ symbol from **Map Symbols** and click the cell. The tool will stop showing candidates for that room type.
+
+---
+
+## Ultra Secret Room Detection
+
+Enable the **❓ Ultra Secret Room** toggle to highlight possible USR locations.
+
+### How it works
+
+Ultra Secret Rooms are isolated — no direct door connections to the rest of the map. They can only be reached by opening a Red Room adjacent to them (Red Key, Crystal Key, Cracked Key, Soul of Cain, etc.).
+
+The tool scans for empty cells that:
+- Have **no real rooms as direct neighbors** (only empty cells or Red Rooms around them)
+- Are reachable through adjacent Red Room paths that connect to at least one regular room
+
+Candidates are prioritized by total connections through valid Red Room paths:
+
+| Priority | Connections | Likelihood |
+|----------|-------------|------------|
+| Highest | 3 or more | ~11.5× more likely than a 2-connection spot |
+| Fallback | 2 | ~11.5× more likely than a 1-connection spot |
+| Last resort | 1 | Only shown when no higher-priority spots exist |
+
+Only the **highest non-empty bucket** is displayed at a time.
+
+**A Red Room path is invalidated if it is adjacent to a Boss Room, Secret Room, or Super Secret Room.**
+
+### Tips
+
+- When you have multiple Red Room options, **mark the potential ones on the map** to visualize your choices. If the Red Room you open is adjacent to the USR, the USR door opens automatically when you enter it.
+- Prioritize opening the Red Room that connects to the highest number of other rooms — it covers more possible USR locations in one move.
+- Once you locate the USR, mark it with ❓ from Map Symbols to stop detection.
 
 ---
 

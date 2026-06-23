@@ -2,6 +2,32 @@
 
 ## [Unreleased]
 
+### Added
+- **Ultra Secret Room (❓) toggle** — detects isolated cells reachable only via adjacent Red Rooms
+  - Candidates prioritized by connection count: 3+ highest, 2 fallback, 1 last resort (cascade display like SR/SSR)
+  - Red Room paths invalid if adjacent to Boss, Secret, or Super Secret Rooms
+  - USR symbol added to Map Symbols picker
+- **Secret Rooms toggle panel** — new section (green theme) with live candidate detection
+  - Empty cells adjacent to 3–4 rooms highlighted with green pulse + 🗝 icon (Secret Room candidate)
+  - Empty cells adjacent to exactly 1 room highlighted with purple pulse + ⭐ icon (Super Secret Room candidate)
+- **Wall strips** — clickable edge strips on room cells facing empty space; green = unchecked, red = already bombed
+  - Any single red (blocked) strip instantly eliminates that cell as a SR/SSR candidate
+  - Strip positions shift correctly when using the Move Marked Cells arrows
+- **Found markers** — new map symbols ❔ (Secret Room found) and ❔ (Super Secret Room found); placing either stops detection for that type
+- **Exclusion rules** — SR/SSR candidates cannot be adjacent to boss rooms (💀) or to each other (❔ cells exclude adjacent SSR candidates)
+
+### Changed
+- Red Rooms no longer count as "real rooms" for SR/SSR detection (fixed false SSR candidates adjacent to placed Red Rooms)
+- SR detection uses cascading adjacency thresholds: prefer 3+, fall back to 2, then 1 (only if SSR found) to more intelligently rank candidates
+- Downloaded map filename now includes a timestamp (e.g., `isaac_map_20260426143022.png`) to prevent overwrites
+- **SR/SSR marker styling** — restyled as gray backgrounds (SR: #808080 medium gray, SSR: #333333 dark gray) with white ❔ icon for both, improving visual consistency
+- **Legend and stats colors** — updated to gray palette to match new SR/SSR marker styling
+- README: added "Secret Room Detection" section with detailed rules, wall strip guide, and marking instructions; added "Ultra Secret Room Detection" section
+- Restored hidden Edmund comment
+
+### Fixed
+- Replaced `cell.textContent` assignment with a `cell-text` span to prevent wall strip DOM nodes from being destroyed on cell re-mark
+
 ---
 
 ## [0.2.2] — 2026-04-26
