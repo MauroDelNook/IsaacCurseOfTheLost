@@ -19,6 +19,7 @@
             <p>➤ Mark confirmed empty spots with ✕ — it improves Delirium detection accuracy.</p>
             <p>➤ Special room shapes (2×2, L-shaped, narrow) aren't supported — mark each cell individually.</p>
             <p>➤ Enable Secret Rooms to highlight likely Secret / Super Secret Room spots. Click a room's edge strips to cross out walls you've already checked.</p>
+            <p>➤ Enable Fragmented Card if you have this trinket — a second Secret Room exists on this floor.</p>
             <p>➤ Enable Ultra Secret Room to find isolated spots reachable only via Red Rooms. Mark with ❓ once found.</p>
             <p>➤ Mark potential Red Rooms to plan which wall to open — if the Red Room is adjacent to the USR, its door opens automatically when you enter.</p>
         </div>
@@ -83,6 +84,22 @@
                     <span class="legend-usr-note">Red rooms adjacent to Boss, Secret, or Super Secret Rooms don't count as valid paths.</span>
                     <span class="legend-usr-note">Once found, mark with ❓ from Map Symbols to stop detection.</span>
                 </div>
+            </div>
+        </div>
+
+        <div class="fragmented-section">
+            <div class="fragmented-toggle-row">
+                <div>
+                    <div class="fragmented-label">🃏 Fragmented Card</div>
+                    <div class="fragmented-description">Two Secret Rooms exist on this floor instead of one</div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="fragmented-toggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="fragmented-info" id="fragmented-info" style="display:none">
+                <div class="fragmented-note">Two Secret Rooms on this floor — mark both with ❔ once found.</div>
             </div>
         </div>
 

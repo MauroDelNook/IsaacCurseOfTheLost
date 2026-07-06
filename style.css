@@ -286,6 +286,53 @@ h1 {
 .legend-usr      { color: #c04040; }
 .legend-usr-note { color: #7a4040; font-style: italic; }
 
+/* ── Fragmented Card section ── */
+.fragmented-section {
+    background: rgba(20, 15, 5, 0.85);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 25px;
+    border: 1px solid #6b5210;
+}
+
+.fragmented-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.fragmented-label {
+    color: #d4a840;
+    font-weight: bold;
+    font-size: 1.05rem;
+}
+
+.fragmented-description {
+    color: #8a7030;
+    font-size: 0.82rem;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+#fragmented-toggle:checked + .toggle-slider {
+    background-color: #6b5210;
+    border-color: #d4a840;
+    box-shadow: 0 0 8px rgba(212, 168, 64, 0.6);
+}
+
+.fragmented-info {
+    margin-top: 14px;
+    border-top: 1px solid #4a3a10;
+    padding-top: 12px;
+}
+
+.fragmented-note {
+    color: #c0902a;
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
 /* ── Grid ── */
 .grid-container {
     display: flex;

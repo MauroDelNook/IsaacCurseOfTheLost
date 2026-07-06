@@ -76,6 +76,16 @@ Once you find a Secret Room or Super Secret Room, select the matching ❔ symbol
 
 ---
 
+## Fragmented Card
+
+Enable the **🃏 Fragmented Card** toggle if you have this trinket in your run.
+
+Fragmented Card causes a second Secret Room to spawn on the floor. The tool will keep showing Secret Room candidates until both are found, and the stats display progress as **1/2 Secret Rooms found — searching for 2nd** while one remains.
+
+Once both are marked with ❔, detection stops. The Super Secret Room is unaffected.
+
+---
+
 ## Ultra Secret Room Detection
 
 Enable the **❓ Ultra Secret Room** toggle to highlight possible USR locations.

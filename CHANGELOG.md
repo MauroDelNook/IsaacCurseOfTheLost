@@ -3,6 +3,9 @@
 ## [Unreleased]
 
 ### Added
+- **Fragmented Card toggle (🃏)** — detects and tracks two Secret Rooms when the Fragmented Card trinket is held; stats display progress as "1/2 Secret Rooms found — searching for 2nd"
+
+### Added
 - **Ultra Secret Room (❓) toggle** — detects isolated cells reachable only via adjacent Red Rooms
   - Candidates prioritized by connection count: 3+ highest, 2 fallback, 1 last resort (cascade display like SR/SSR)
   - Red Room paths invalid if adjacent to Boss, Secret, or Super Secret Rooms
