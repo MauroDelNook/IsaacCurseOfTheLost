@@ -86,6 +86,18 @@ Once both are marked with ❔, detection stops. The Super Secret Room is unaffec
 
 ---
 
+## Luna
+
+Enable the **🌙 Luna** toggle if this floor has its effect active.
+
+Luna adds an extra Secret Room *and* an extra Super Secret Room to the floor — 2 of each instead of 1. It stacks with Fragmented Card, so a floor can have up to **3 Secret Rooms** (Fragmented + Luna) and **2 Super Secret Rooms** (Luna).
+
+The stats display progress the same way as Fragmented Card, e.g. **1/3 Secret Rooms found — searching for next**. As with the base rules, none of the same-type rooms can be adjacent to each other, so once one is marked with ❔, candidates touching it are excluded from the next search.
+
+Once all expected rooms of a type are marked with ❔, detection stops for that type.
+
+---
+
 ## Ultra Secret Room Detection
 
 Enable the **❓ Ultra Secret Room** toggle to highlight possible USR locations.

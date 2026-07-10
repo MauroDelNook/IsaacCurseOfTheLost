@@ -333,6 +333,53 @@ h1 {
     font-style: italic;
 }
 
+/* ── Luna section ── */
+.luna-section {
+    background: rgba(5, 10, 25, 0.85);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 25px;
+    border: 1px solid #2d4a8b;
+}
+
+.luna-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.luna-label {
+    color: #7ec8e8;
+    font-weight: bold;
+    font-size: 1.05rem;
+}
+
+.luna-description {
+    color: #4a6a9a;
+    font-size: 0.82rem;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+#luna-toggle:checked + .toggle-slider {
+    background-color: #2d4a8b;
+    border-color: #7ec8e8;
+    box-shadow: 0 0 8px rgba(126, 200, 232, 0.6);
+}
+
+.luna-info {
+    margin-top: 14px;
+    border-top: 1px solid #1a2a5a;
+    padding-top: 12px;
+}
+
+.luna-note {
+    color: #6aa0c8;
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
 /* ── Grid ── */
 .grid-container {
     display: flex;

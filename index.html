@@ -20,6 +20,7 @@
             <p>➤ Special room shapes (2×2, L-shaped, narrow) aren't supported — mark each cell individually.</p>
             <p>➤ Enable Secret Rooms to highlight likely Secret / Super Secret Room spots. Click a room's edge strips to cross out walls you've already checked.</p>
             <p>➤ Enable Fragmented Card if you have this trinket — a second Secret Room exists on this floor.</p>
+            <p>➤ Enable Luna if this floor has its effect — one extra Secret Room and one extra Super Secret Room exist. Stacks with Fragmented Card for up to 3 Secret Rooms.</p>
             <p>➤ Enable Ultra Secret Room to find isolated spots reachable only via Red Rooms. Mark with ❓ once found.</p>
             <p>➤ Mark potential Red Rooms to plan which wall to open — if the Red Room is adjacent to the USR, its door opens automatically when you enter.</p>
         </div>
@@ -100,6 +101,22 @@
             </div>
             <div class="fragmented-info" id="fragmented-info" style="display:none">
                 <div class="fragmented-note">Two Secret Rooms on this floor — mark both with ❔ once found.</div>
+            </div>
+        </div>
+
+        <div class="luna-section">
+            <div class="luna-toggle-row">
+                <div>
+                    <div class="luna-label">🌙 Luna</div>
+                    <div class="luna-description">An extra Secret Room and an extra Super Secret Room exist on this floor</div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="luna-toggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="luna-info" id="luna-info" style="display:none">
+                <div class="luna-note">This floor has 2 Super Secret Rooms (and an extra Secret Room) — mark each with ❔ once found. Stacks with Fragmented Card for up to 3 Secret Rooms. None of them can be adjacent to each other.</div>
             </div>
         </div>
 

@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const secretToggle = document.getElementById('secret-toggle');
     const usrToggle = document.getElementById('usr-toggle');
     const fragmentedToggle = document.getElementById('fragmented-toggle');
+    const lunaToggle = document.getElementById('luna-toggle');
     const upBtn = document.getElementById('up-btn');
     const downBtn = document.getElementById('down-btn');
     const leftBtn = document.getElementById('left-btn');
@@ -19,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let isSecretMode = false;
     let isUsrMode = false;
     let isFragmentedMode = false;
+    let isLunaMode = false;
     let blockedWalls = new Set();
 
     githubLink.href = 'https://github.com/MauroDelNook';
@@ -153,8 +155,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!isSecretMode) return;
 
         const srCountFound = Object.values(markedCells).filter(v => v === 'sr').length;
-        const srFound  = isFragmentedMode ? srCountFound >= 2 : srCountFound >= 1;
-        const ssrFound = Object.values(markedCells).some(v => v === 'ssr');
+        const srTarget = 1 + (isFragmentedMode ? 1 : 0) + (isLunaMode ? 1 : 0);
+        const srFound  = srCountFound >= srTarget;
+
+        const ssrCountFound = Object.values(markedCells).filter(v => v === 'ssr').length;
+        const ssrTarget = 1 + (isLunaMode ? 1 : 0);
+        const ssrFound = ssrCountFound >= ssrTarget;
 
         // Highlight empty cells that are SR or SSR candidates (only for unfound types)
         if (!srFound || !ssrFound) {
@@ -189,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (srBuckets[bucket]) srBuckets[bucket].push(cell);
                     }
 
-                    if (!ssrFound && totalRoom === 1 && !touchesSR) {
+                    if (!ssrFound && totalRoom === 1 && !touchesSR && !touchesSSR) {
                         ssrList.push(cell);
                     }
                 }
@@ -233,24 +239,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateSecretStats() {
         const srCountFound = Object.values(markedCells).filter(v => v === 'sr').length;
-        const srFound  = isFragmentedMode ? srCountFound >= 2 : srCountFound >= 1;
-        const ssrFound = Object.values(markedCells).some(v => v === 'ssr');
+        const srTarget = 1 + (isFragmentedMode ? 1 : 0) + (isLunaMode ? 1 : 0);
+        const srFound  = srCountFound >= srTarget;
+
+        const ssrCountFound = Object.values(markedCells).filter(v => v === 'ssr').length;
+        const ssrTarget = 1 + (isLunaMode ? 1 : 0);
+        const ssrFound = ssrCountFound >= ssrTarget;
+
         const srCount  = document.querySelectorAll('.sr-candidate').length;
         const ssrCount = document.querySelectorAll('.ssr-candidate').length;
         const statsEl  = document.getElementById('secret-stats');
 
         const parts = [];
         if (srFound) {
-            parts.push(`<span class="stat-sr">❔ Secret Room${isFragmentedMode ? 's' : ''} found!</span>`);
-        } else if (isFragmentedMode && srCountFound === 1) {
+            parts.push(`<span class="stat-sr">❔ Secret Room${srTarget > 1 ? 's' : ''} found!</span>`);
+        } else if (srTarget > 1 && srCountFound > 0) {
             const candidateNote = srCount > 0 ? ` (${srCount} candidate${srCount !== 1 ? 's' : ''})` : '';
-            parts.push(`<span class="stat-sr">❔ 1/2 Secret Rooms found — searching for 2nd${candidateNote}</span>`);
+            parts.push(`<span class="stat-sr">❔ ${srCountFound}/${srTarget} Secret Rooms found — searching for next${candidateNote}</span>`);
         } else if (srCount > 0) {
             parts.push(`<span class="stat-sr">${srCount} possible Secret Room${srCount !== 1 ? 's' : ''}</span>`);
         }
 
-        if (ssrFound)        parts.push(`<span class="stat-ssr">❔ Super Secret Room found!</span>`);
-        else if (ssrCount > 0) parts.push(`<span class="stat-ssr">${ssrCount} possible Super Secret Room${ssrCount !== 1 ? 's' : ''}</span>`);
+        if (ssrFound) {
+            parts.push(`<span class="stat-ssr">❔ Super Secret Room${ssrTarget > 1 ? 's' : ''} found!</span>`);
+        } else if (ssrTarget > 1 && ssrCountFound > 0) {
+            const candidateNote = ssrCount > 0 ? ` (${ssrCount} candidate${ssrCount !== 1 ? 's' : ''})` : '';
+            parts.push(`<span class="stat-ssr">❔ ${ssrCountFound}/${ssrTarget} Super Secret Rooms found — searching for next${candidateNote}</span>`);
+        } else if (ssrCount > 0) {
+            parts.push(`<span class="stat-ssr">${ssrCount} possible Super Secret Room${ssrCount !== 1 ? 's' : ''}</span>`);
+        }
 
         if (parts.length === 0) {
             const hasRooms = Object.values(markedCells).some(v => v !== 'empty-room');
@@ -398,6 +415,12 @@ document.addEventListener('DOMContentLoaded', function() {
     fragmentedToggle.addEventListener('change', function() {
         isFragmentedMode = this.checked;
         document.getElementById('fragmented-info').style.display = isFragmentedMode ? 'block' : 'none';
+        updateSecretRoomMarkers();
+    });
+
+    lunaToggle.addEventListener('change', function() {
+        isLunaMode = this.checked;
+        document.getElementById('luna-info').style.display = isLunaMode ? 'block' : 'none';
         updateSecretRoomMarkers();
     });
 
