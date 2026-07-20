@@ -35,6 +35,7 @@ Lets you manually reconstruct the floor map on a 13×13 grid (the maximum map si
 - **Arrow buttons** — shifts the entire marked map one cell in that direction (useful when you realize your starting reference is off)
 - **Clear Grid** — resets all marks
 - **Download Map** — exports the current grid as a PNG image with a timestamp in the filename
+- **ℹ button** — opens a popup with full usage instructions
 
 ---
 

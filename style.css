@@ -46,19 +46,6 @@ h1 {
     margin-bottom: 5px;
 }
 
-.instructions {
-    background: rgba(10, 10, 20, 0.7);
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 25px;
-    border-left: 4px solid #f72585;
-}
-
-.instructions p {
-    margin-bottom: 10px;
-    line-height: 1.5;
-}
-
 /* ── Void Mode section ── */
 .void-section {
     background: rgba(15, 5, 25, 0.85);
@@ -673,8 +660,30 @@ h1 {
 
 .buttons {
     display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.buttons-stack {
+    display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+.info-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    padding: 0;
+    font-size: 20px;
+    font-style: italic;
+    font-weight: bold;
+    flex-shrink: 0;
+    background: linear-gradient(to bottom, #7b8a99, #55636f);
+}
+
+.info-btn:hover {
+    background: linear-gradient(to bottom, #4cc9f0, #3a86b8);
 }
 
 button {
@@ -790,4 +799,69 @@ button:active { transform: translateY(0); }
     display: inline-block;
     margin-right: 10px;
     font-size: 1.5rem;
+}
+
+/* ── Instructions modal ── */
+.info-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    z-index: 1000;
+}
+
+.info-modal {
+    background: #1a1a2e;
+    border: 2px solid #4cc9f0;
+    border-radius: 10px;
+    box-shadow: 0 0 25px rgba(76, 201, 240, 0.4);
+    max-width: 560px;
+    width: 100%;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.info-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 15px 20px;
+    border-bottom: 1px solid #4cc9f0;
+    flex-shrink: 0;
+}
+
+.info-modal-header h2 {
+    color: #f72585;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+}
+
+.info-modal-close {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 50%;
+    background: linear-gradient(to bottom, #e74c3c, #c0392b);
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.info-modal-body {
+    padding: 15px 20px 20px;
+    overflow-y: auto;
+}
+
+.info-modal-body p {
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.info-modal-body p:last-child {
+    margin-bottom: 0;
 }

@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+- **Info modal (ℹ)** — moved instructions to a toggleable modal dialog triggered by info button; supports keyboard close (Esc) and click-outside dismissal
 - **Luna toggle (🌙)** — adds an extra Secret Room and an extra Super Secret Room to the floor (2 of each instead of 1); stacks with Fragmented Card for up to 3 Secret Rooms total
 - Luna section in UI with toggle and info note explaining room counts
 - **Fragmented Card toggle (🃏)** — detects and tracks two Secret Rooms when the Fragmented Card trinket is held; stats display progress as "1/2 Secret Rooms found — searching for 2nd"

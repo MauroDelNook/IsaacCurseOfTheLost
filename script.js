@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const downBtn = document.getElementById('down-btn');
     const leftBtn = document.getElementById('left-btn');
     const rightBtn = document.getElementById('right-btn');
+    const infoBtn = document.getElementById('info-btn');
+    const infoModalOverlay = document.getElementById('info-modal-overlay');
+    const infoModalClose = document.getElementById('info-modal-close');
 
     let selectedColor = 'white';
     let markedCells = {};
@@ -594,6 +597,25 @@ document.addEventListener('DOMContentLoaded', function() {
     downBtn.addEventListener('click',  () => moveMarkedCells('down'));
     leftBtn.addEventListener('click',  () => moveMarkedCells('left'));
     rightBtn.addEventListener('click', () => moveMarkedCells('right'));
+
+    // ── Instructions modal ──
+
+    function openInfoModal() {
+        infoModalOverlay.style.display = 'flex';
+    }
+
+    function closeInfoModal() {
+        infoModalOverlay.style.display = 'none';
+    }
+
+    infoBtn.addEventListener('click', openInfoModal);
+    infoModalClose.addEventListener('click', closeInfoModal);
+    infoModalOverlay.addEventListener('click', function(e) {
+        if (e.target === infoModalOverlay) closeInfoModal();
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && infoModalOverlay.style.display !== 'none') closeInfoModal();
+    });
 
     function moveMarkedCells(direction) {
         const newMarkedCells = {};
