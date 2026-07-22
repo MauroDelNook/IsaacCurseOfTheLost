@@ -35,6 +35,9 @@ Lets you manually reconstruct the floor map on a 13×13 grid (the maximum map si
 - **Arrow buttons** — shifts the entire marked map one cell in that direction (useful when you realize your starting reference is off)
 - **Clear Grid** — resets all marks
 - **Download Map** — exports the current grid as a PNG image with a timestamp in the filename
+- **ℹ button** — opens a popup with full usage instructions
+
+The **Void Floor, Secret Rooms, Ultra Secret Room, Fragmented Card, and Luna** toggles live in a compact panel beside "Move Marked Cells", below the grid. Each has its own ⓘ icon — click it for a quick explanation of what that toggle does.
 
 ---
 
@@ -73,6 +76,28 @@ Click any wall strip to toggle it red. A cell with all its strips marked red is 
 ### Marking found rooms
 
 Once you find a Secret Room or Super Secret Room, select the matching ❔ symbol from **Map Symbols** and click the cell. The tool will stop showing candidates for that room type.
+
+---
+
+## Fragmented Card
+
+Enable the **🃏 Fragmented Card** toggle if you have this trinket in your run.
+
+Fragmented Card causes a second Secret Room to spawn on the floor. The tool will keep showing Secret Room candidates until both are found, and the stats display progress as **1/2 Secret Rooms found — searching for 2nd** while one remains.
+
+Once both are marked with ❔, detection stops. The Super Secret Room is unaffected.
+
+---
+
+## Luna
+
+Enable the **🌙 Luna** toggle if this floor has its effect active.
+
+Luna adds an extra Secret Room *and* an extra Super Secret Room to the floor — 2 of each instead of 1. It stacks with Fragmented Card, so a floor can have up to **3 Secret Rooms** (Fragmented + Luna) and **2 Super Secret Rooms** (Luna).
+
+The stats display progress the same way as Fragmented Card, e.g. **1/3 Secret Rooms found — searching for next**. As with the base rules, none of the same-type rooms can be adjacent to each other, so once one is marked with ❔, candidates touching it are excluded from the next search.
+
+Once all expected rooms of a type are marked with ❔, detection stops for that type.
 
 ---
 

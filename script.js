@@ -7,16 +7,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const voidToggle = document.getElementById('void-toggle');
     const secretToggle = document.getElementById('secret-toggle');
     const usrToggle = document.getElementById('usr-toggle');
+    const fragmentedToggle = document.getElementById('fragmented-toggle');
+    const lunaToggle = document.getElementById('luna-toggle');
     const upBtn = document.getElementById('up-btn');
     const downBtn = document.getElementById('down-btn');
     const leftBtn = document.getElementById('left-btn');
     const rightBtn = document.getElementById('right-btn');
+    const infoBtn = document.getElementById('info-btn');
+    const infoModalOverlay = document.getElementById('info-modal-overlay');
+    const infoModalClose = document.getElementById('info-modal-close');
 
     let selectedColor = 'white';
     let markedCells = {};
     let isVoidMode = false;
     let isSecretMode = false;
     let isUsrMode = false;
+    let isFragmentedMode = false;
+    let isLunaMode = false;
     let blockedWalls = new Set();
 
     githubLink.href = 'https://github.com/MauroDelNook';
@@ -150,8 +157,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!isSecretMode) return;
 
-        const srFound  = Object.values(markedCells).some(v => v === 'sr');
-        const ssrFound = Object.values(markedCells).some(v => v === 'ssr');
+        const srCountFound = Object.values(markedCells).filter(v => v === 'sr').length;
+        const srTarget = 1 + (isFragmentedMode ? 1 : 0) + (isLunaMode ? 1 : 0);
+        const srFound  = srCountFound >= srTarget;
+
+        const ssrCountFound = Object.values(markedCells).filter(v => v === 'ssr').length;
+        const ssrTarget = 1 + (isLunaMode ? 1 : 0);
+        const ssrFound = ssrCountFound >= ssrTarget;
 
         // Highlight empty cells that are SR or SSR candidates (only for unfound types)
         if (!srFound || !ssrFound) {
@@ -176,18 +188,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (touchesBoss) continue;
 
                     const touchesSSR = DIRS.some(({ dr, dc }) => markedCells[`${r + dr}-${c + dc}`] === 'ssr');
+                    const touchesSR  = DIRS.some(({ dr, dc }) => markedCells[`${r + dr}-${c + dc}`] === 'sr');
 
                     const cell = document.querySelector(`.cell[data-row="${r}"][data-col="${c}"]`);
                     if (!cell) continue;
 
-                    if (!srFound && !touchesSSR) {
+                    if (!srFound && !touchesSSR && !touchesSR) {
                         const bucket = totalRoom >= 3 ? 3 : totalRoom;
                         if (srBuckets[bucket]) srBuckets[bucket].push(cell);
                     }
 
-                    if (!ssrFound && totalRoom === 1) {
-                        const touchesSR = DIRS.some(({ dr, dc }) => markedCells[`${r + dr}-${c + dc}`] === 'sr');
-                        if (!touchesSR) ssrList.push(cell);
+                    if (!ssrFound && totalRoom === 1 && !touchesSR && !touchesSSR) {
+                        ssrList.push(cell);
                     }
                 }
             }
@@ -229,18 +241,36 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateSecretStats() {
-        const srFound  = Object.values(markedCells).some(v => v === 'sr');
-        const ssrFound = Object.values(markedCells).some(v => v === 'ssr');
+        const srCountFound = Object.values(markedCells).filter(v => v === 'sr').length;
+        const srTarget = 1 + (isFragmentedMode ? 1 : 0) + (isLunaMode ? 1 : 0);
+        const srFound  = srCountFound >= srTarget;
+
+        const ssrCountFound = Object.values(markedCells).filter(v => v === 'ssr').length;
+        const ssrTarget = 1 + (isLunaMode ? 1 : 0);
+        const ssrFound = ssrCountFound >= ssrTarget;
+
         const srCount  = document.querySelectorAll('.sr-candidate').length;
         const ssrCount = document.querySelectorAll('.ssr-candidate').length;
         const statsEl  = document.getElementById('secret-stats');
 
         const parts = [];
-        if (srFound)        parts.push(`<span class="stat-sr">❔ Secret Room found!</span>`);
-        else if (srCount > 0) parts.push(`<span class="stat-sr">${srCount} possible Secret Room${srCount !== 1 ? 's' : ''}</span>`);
+        if (srFound) {
+            parts.push(`<span class="stat-sr">❔ Secret Room${srTarget > 1 ? 's' : ''} found!</span>`);
+        } else if (srTarget > 1 && srCountFound > 0) {
+            const candidateNote = srCount > 0 ? ` (${srCount} candidate${srCount !== 1 ? 's' : ''})` : '';
+            parts.push(`<span class="stat-sr">❔ ${srCountFound}/${srTarget} Secret Rooms found — searching for next${candidateNote}</span>`);
+        } else if (srCount > 0) {
+            parts.push(`<span class="stat-sr">${srCount} possible Secret Room${srCount !== 1 ? 's' : ''}</span>`);
+        }
 
-        if (ssrFound)        parts.push(`<span class="stat-ssr">❔ Super Secret Room found!</span>`);
-        else if (ssrCount > 0) parts.push(`<span class="stat-ssr">${ssrCount} possible Super Secret Room${ssrCount !== 1 ? 's' : ''}</span>`);
+        if (ssrFound) {
+            parts.push(`<span class="stat-ssr">❔ Super Secret Room${ssrTarget > 1 ? 's' : ''} found!</span>`);
+        } else if (ssrTarget > 1 && ssrCountFound > 0) {
+            const candidateNote = ssrCount > 0 ? ` (${ssrCount} candidate${ssrCount !== 1 ? 's' : ''})` : '';
+            parts.push(`<span class="stat-ssr">❔ ${ssrCountFound}/${ssrTarget} Super Secret Rooms found — searching for next${candidateNote}</span>`);
+        } else if (ssrCount > 0) {
+            parts.push(`<span class="stat-ssr">${ssrCount} possible Super Secret Room${ssrCount !== 1 ? 's' : ''}</span>`);
+        }
 
         if (parts.length === 0) {
             const hasRooms = Object.values(markedCells).some(v => v !== 'empty-room');
@@ -383,6 +413,18 @@ document.addEventListener('DOMContentLoaded', function() {
         isUsrMode = this.checked;
         document.getElementById('usr-info').style.display = isUsrMode ? 'block' : 'none';
         updateUSRMarkers();
+    });
+
+    fragmentedToggle.addEventListener('change', function() {
+        isFragmentedMode = this.checked;
+        document.getElementById('fragmented-info').style.display = isFragmentedMode ? 'block' : 'none';
+        updateSecretRoomMarkers();
+    });
+
+    lunaToggle.addEventListener('change', function() {
+        isLunaMode = this.checked;
+        document.getElementById('luna-info').style.display = isLunaMode ? 'block' : 'none';
+        updateSecretRoomMarkers();
     });
 
     // ── Grid creation ──
@@ -555,6 +597,52 @@ document.addEventListener('DOMContentLoaded', function() {
     downBtn.addEventListener('click',  () => moveMarkedCells('down'));
     leftBtn.addEventListener('click',  () => moveMarkedCells('left'));
     rightBtn.addEventListener('click', () => moveMarkedCells('right'));
+
+    // ── Instructions modal ──
+
+    function openInfoModal() {
+        infoModalOverlay.style.display = 'flex';
+    }
+
+    function closeInfoModal() {
+        infoModalOverlay.style.display = 'none';
+    }
+
+    infoBtn.addEventListener('click', openInfoModal);
+    infoModalClose.addEventListener('click', closeInfoModal);
+    infoModalOverlay.addEventListener('click', function(e) {
+        if (e.target === infoModalOverlay) closeInfoModal();
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && infoModalOverlay.style.display !== 'none') closeInfoModal();
+    });
+
+    // ── Toggle tooltips ──
+
+    function closeAllTooltips(except) {
+        document.querySelectorAll('.toggle-tooltip.active').forEach(tip => {
+            if (tip !== except) tip.classList.remove('active');
+        });
+        document.querySelectorAll('.info-icon-btn.active').forEach(btn => {
+            if (btn.dataset.tooltipTarget !== (except && except.id)) btn.classList.remove('active');
+        });
+    }
+
+    document.querySelectorAll('.info-icon-btn').forEach(btn => {
+        const tooltip = document.getElementById(btn.dataset.tooltipTarget);
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const willOpen = !tooltip.classList.contains('active');
+            closeAllTooltips();
+            tooltip.classList.toggle('active', willOpen);
+            btn.classList.toggle('active', willOpen);
+        });
+    });
+
+    document.addEventListener('click', () => closeAllTooltips());
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeAllTooltips();
+    });
 
     function moveMarkedCells(direction) {
         const newMarkedCells = {};

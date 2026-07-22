@@ -2,7 +2,19 @@
 
 ## [Unreleased]
 
+### Changed
+- **UI layout restructuring** — moved toggles panel to sit beside "Move Marked Cells" navigation in a compact flex layout for better space efficiency
+- **Toggles panel redesign** — Void Floor, Secret Rooms, USR, Fragmented Card, and Luna controls now grouped in a single styled container with inline tooltips
+- **Info icons and tooltips** — each toggle feature now has a compact ⓘ icon that reveals a tooltip on click; click-outside and Esc to dismiss
+- Detection info panels (Void, Secret Rooms, USR, Fragmented Card, Luna) now unified under a `.detection-panels` container
+- Toggle switches resized to compact variant (40px × 22px) for toggles panel
+- "Move Marked Cells" navigation box now stretches to match the toggles panel's height, with its content centered vertically
+
 ### Added
+- **Info modal (ℹ)** — moved instructions to a toggleable modal dialog triggered by info button; supports keyboard close (Esc) and click-outside dismissal
+- **Luna toggle (🌙)** — adds an extra Secret Room and an extra Super Secret Room to the floor (2 of each instead of 1); stacks with Fragmented Card for up to 3 Secret Rooms total
+- Luna section in UI with toggle and info note explaining room counts
+- **Fragmented Card toggle (🃏)** — detects and tracks two Secret Rooms when the Fragmented Card trinket is held; stats display progress as "1/2 Secret Rooms found — searching for 2nd"
 - **Ultra Secret Room (❓) toggle** — detects isolated cells reachable only via adjacent Red Rooms
   - Candidates prioritized by connection count: 3+ highest, 2 fallback, 1 last resort (cascade display like SR/SSR)
   - Red Room paths invalid if adjacent to Boss, Secret, or Super Secret Rooms
@@ -22,11 +34,15 @@
 - Downloaded map filename now includes a timestamp (e.g., `isaac_map_20260426143022.png`) to prevent overwrites
 - **SR/SSR marker styling** — restyled as gray backgrounds (SR: #808080 medium gray, SSR: #333333 dark gray) with white ❔ icon for both, improving visual consistency
 - **Legend and stats colors** — updated to gray palette to match new SR/SSR marker styling
-- README: added "Secret Room Detection" section with detailed rules, wall strip guide, and marking instructions; added "Ultra Secret Room Detection" section
+- README: added "Secret Room Detection" section with detailed rules, wall strip guide, and marking instructions; added "Ultra Secret Room Detection" section; added "Luna" section
+- Secret Room stats display now dynamically shows X/Y count format (e.g., "1/3 Secret Rooms found — searching for next") when multiple rooms are expected, with Luna or Fragmented Card
+- Super Secret Room stats similarly supports multiple targets with Luna (up to 2 SSR with Luna alone, or 2 SSR + 3 SR combined)
+- Instructions updated to mention Luna toggle effect
 - Restored hidden Edmund comment
 
 ### Fixed
 - Replaced `cell.textContent` assignment with a `cell-text` span to prevent wall strip DOM nodes from being destroyed on cell re-mark
+- SSR candidate detection now properly excludes cells adjacent to already-marked Super Secret Rooms (prevents duplicate adjacencies)
 
 ---
 
