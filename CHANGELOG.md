@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Changed
+- **UI layout restructuring** — moved toggles panel to sit beside "Move Marked Cells" navigation in a compact flex layout for better space efficiency
+- **Toggles panel redesign** — Void Floor, Secret Rooms, USR, Fragmented Card, and Luna controls now grouped in a single styled container with inline tooltips
+- **Info icons and tooltips** — each toggle feature now has a compact ⓘ icon that reveals a tooltip on click; click-outside and Esc to dismiss
+- Detection info panels (Void, Secret Rooms, USR, Fragmented Card, Luna) now unified under a `.detection-panels` container
+- Toggle switches resized to compact variant (40px × 22px) for toggles panel
+- "Move Marked Cells" navigation box now stretches to match the toggles panel's height, with its content centered vertically
+
 ### Added
 - **Info modal (ℹ)** — moved instructions to a toggleable modal dialog triggered by info button; supports keyboard close (Esc) and click-outside dismissal
 - **Luna toggle (🌙)** — adds an extra Secret Room and an extra Super Secret Room to the floor (2 of each instead of 1); stacks with Fragmented Card for up to 3 Secret Rooms total

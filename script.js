@@ -617,6 +617,33 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.key === 'Escape' && infoModalOverlay.style.display !== 'none') closeInfoModal();
     });
 
+    // ── Toggle tooltips ──
+
+    function closeAllTooltips(except) {
+        document.querySelectorAll('.toggle-tooltip.active').forEach(tip => {
+            if (tip !== except) tip.classList.remove('active');
+        });
+        document.querySelectorAll('.info-icon-btn.active').forEach(btn => {
+            if (btn.dataset.tooltipTarget !== (except && except.id)) btn.classList.remove('active');
+        });
+    }
+
+    document.querySelectorAll('.info-icon-btn').forEach(btn => {
+        const tooltip = document.getElementById(btn.dataset.tooltipTarget);
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const willOpen = !tooltip.classList.contains('active');
+            closeAllTooltips();
+            tooltip.classList.toggle('active', willOpen);
+            btn.classList.toggle('active', willOpen);
+        });
+    });
+
+    document.addEventListener('click', () => closeAllTooltips());
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeAllTooltips();
+    });
+
     function moveMarkedCells(direction) {
         const newMarkedCells = {};
 

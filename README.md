@@ -37,6 +37,8 @@ Lets you manually reconstruct the floor map on a 13×13 grid (the maximum map si
 - **Download Map** — exports the current grid as a PNG image with a timestamp in the filename
 - **ℹ button** — opens a popup with full usage instructions
 
+The **Void Floor, Secret Rooms, Ultra Secret Room, Fragmented Card, and Luna** toggles live in a compact panel beside "Move Marked Cells", below the grid. Each has its own ⓘ icon — click it for a quick explanation of what that toggle does.
+
 ---
 
 ## Secret Room Detection
