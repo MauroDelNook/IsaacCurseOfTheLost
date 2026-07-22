@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.0.0] — 2026-07-22
+
 ### Changed
 - **UI layout restructuring** — moved toggles panel to sit beside "Move Marked Cells" navigation in a compact flex layout for better space efficiency
 - **Toggles panel redesign** — Void Floor, Secret Rooms, USR, Fragmented Card, and Luna controls now grouped in a single styled container with inline tooltips
